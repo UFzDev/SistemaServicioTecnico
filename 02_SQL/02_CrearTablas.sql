@@ -1,7 +1,9 @@
 USE ServicioTecnicoBD;
 GO
 
--- Crear las tablas en orden para respetar sus dependencias y relaciones.
+-- Configurar opciones ANSI requeridas para índices filtrados y transacciones seguras.
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
 SET XACT_ABORT ON;
 GO
 

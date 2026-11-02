@@ -1,12 +1,11 @@
--- Ejecutar primero desde SQL Server Management Studio con permisos para crear bases de datos.
+/* Ejecutar primero desde SQL Server Management Studio. */
 USE master;
 GO
 
--- Crear la base de datos solo si todavía no existe.
-IF DB_ID(N'ServicioTecnicoBD') IS NULL
+IF DB_ID(N'SistemaServicioTecnico') IS NULL
     CREATE DATABASE ServicioTecnicoBD;
 GO
 
--- Seleccionar la base de datos que utilizarán los scripts siguientes.
+-- Ejecutar este script antes de crear las tablas del sistema.
 USE ServicioTecnicoBD;
 GO

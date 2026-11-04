@@ -152,6 +152,140 @@ BEGIN
 END;
 GO
 
+-- Inserta o actualiza un proveedor validando su nombre comercial y formato de RFC.
+IF OBJECT_ID('dbo.usp_ProveedorGuardar', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.usp_ProveedorGuardar;
+GO
+
+CREATE PROCEDURE dbo.usp_ProveedorGuardar
+    @IdProveedor INT = 0,
+    @Nombre NVARCHAR(180),
+    @RFC NVARCHAR(13) = NULL,
+    @Contacto NVARCHAR(120) = NULL,
+    @Telefono NVARCHAR(25) = NULL,
+    @Correo NVARCHAR(254) = NULL,
+    @Direccion NVARCHAR(300) = NULL,
+    @Activo BIT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Nombre IS NULL OR LEN(LTRIM(RTRIM(@Nombre))) = 0
+        THROW 50004, 'El nombre del proveedor es obligatorio.', 1;
+
+    IF @IdProveedor = 0
+    BEGIN
+        INSERT INTO dbo.Proveedor (Nombre, RFC, Contacto, Telefono, Correo, Direccion, Activo)
+        VALUES (@Nombre, @RFC, @Contacto, @Telefono, @Correo, @Direccion, @Activo);
+
+        SELECT SCOPE_IDENTITY() AS IdGenerado;
+    END
+    ELSE
+    BEGIN
+        UPDATE dbo.Proveedor
+        SET Nombre = @Nombre,
+            RFC = @RFC,
+            Contacto = @Contacto,
+            Telefono = @Telefono,
+            Correo = @Correo,
+            Direccion = @Direccion,
+            Activo = @Activo
+        WHERE IdProveedor = @IdProveedor;
+
+        SELECT @IdProveedor AS IdGenerado;
+    END
+END;
+GO
+
+-- Inserta o actualiza un servicio del catalogo de taller validando categoria y precio base.
+IF OBJECT_ID('dbo.usp_ServicioGuardar', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.usp_ServicioGuardar;
+GO
+
+CREATE PROCEDURE dbo.usp_ServicioGuardar
+    @IdServicio INT = 0,
+    @IdCategoriaServicio INT,
+    @Nombre NVARCHAR(160),
+    @Descripcion NVARCHAR(400) = NULL,
+    @PrecioBase DECIMAL(12,2) = 0,
+    @Activo BIT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Nombre IS NULL OR LEN(LTRIM(RTRIM(@Nombre))) = 0
+        THROW 50005, 'El nombre del servicio es obligatorio.', 1;
+
+    IF @PrecioBase < 0
+        THROW 50006, 'El precio base del servicio no puede ser negativo.', 1;
+
+    IF @IdServicio = 0
+    BEGIN
+        INSERT INTO dbo.Servicio (IdCategoriaServicio, Nombre, Descripcion, PrecioBase, Activo)
+        VALUES (@IdCategoriaServicio, @Nombre, @Descripcion, @PrecioBase, @Activo);
+
+        SELECT SCOPE_IDENTITY() AS IdGenerado;
+    END
+    ELSE
+    BEGIN
+        UPDATE dbo.Servicio
+        SET IdCategoriaServicio = @IdCategoriaServicio,
+            Nombre = @Nombre,
+            Descripcion = @Descripcion,
+            PrecioBase = @PrecioBase,
+            Activo = @Activo
+        WHERE IdServicio = @IdServicio;
+
+        SELECT @IdServicio AS IdGenerado;
+    END
+END;
+GO
+
+-- Inserta o actualiza un equipo asociado a un cliente para recepcion en taller.
+IF OBJECT_ID('dbo.usp_EquipoGuardar', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.usp_EquipoGuardar;
+GO
+
+CREATE PROCEDURE dbo.usp_EquipoGuardar
+    @IdEquipo INT = 0,
+    @IdCliente INT,
+    @IdTipoEquipo INT,
+    @IdMarca INT,
+    @Modelo NVARCHAR(130),
+    @NumeroSerie NVARCHAR(120) = NULL,
+    @Caracteristicas NVARCHAR(500) = NULL,
+    @Activo BIT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Modelo IS NULL OR LEN(LTRIM(RTRIM(@Modelo))) = 0
+        THROW 50007, 'El modelo del equipo es obligatorio.', 1;
+
+    IF @IdEquipo = 0
+    BEGIN
+        INSERT INTO dbo.Equipo (IdCliente, IdTipoEquipo, IdMarca, Modelo, NumeroSerie, Caracteristicas, Activo)
+        VALUES (@IdCliente, @IdTipoEquipo, @IdMarca, @Modelo, @NumeroSerie, @Caracteristicas, @Activo);
+
+        SELECT SCOPE_IDENTITY() AS IdGenerado;
+    END
+    ELSE
+    BEGIN
+        UPDATE dbo.Equipo
+        SET IdCliente = @IdCliente,
+            IdTipoEquipo = @IdTipoEquipo,
+            IdMarca = @IdMarca,
+            Modelo = @Modelo,
+            NumeroSerie = @NumeroSerie,
+            Caracteristicas = @Caracteristicas,
+            Activo = @Activo
+        WHERE IdEquipo = @IdEquipo;
+
+        SELECT @IdEquipo AS IdGenerado;
+    END
+END;
+GO
+
 -- 3. Procedimientos transaccionales de procesos
 
 -- Registra una nueva orden de servicio con su estado inicial y trazabilidad en historial.

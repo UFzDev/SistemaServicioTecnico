@@ -5,6 +5,7 @@ using SistemaServicioTecnico.BLL;
 using SistemaServicioTecnico.Entidades;
 using SistemaServicioTecnico.Vistas.Catalogos;
 using SistemaServicioTecnico.Vistas.Procesos;
+using SistemaServicioTecnico.Vistas.Reportes;
 using SistemaServicioTecnico.Vistas.Seguridad;
 
 namespace SistemaServicioTecnico.Vistas
@@ -61,10 +62,26 @@ namespace SistemaServicioTecnico.Vistas
             {
                 lblUsuarioSesion.Text = string.Format("👤 {0} ({1})", _usuarioSesion.NombreEmpleado, _usuarioSesion.Rol);
                 
-                // Restricciones visuales según el rol (si aplica)
+                // Restricciones visuales según el rol
                 if (_usuarioSesion.Rol == "Tecnico")
                 {
+                    btnCatalogos.Visible = false;
+                    btnVentas.Visible = false;
                     btnCompras.Visible = false;
+                    btnReportes.Visible = false;
+                    btnAuditoria.Visible = false;
+                    btnUsuarios.Visible = false;
+                }
+                else if (_usuarioSesion.Rol == "Recepcionista")
+                {
+                    btnCatalogos.Visible = false;
+                    btnCompras.Visible = false;
+                    btnAuditoria.Visible = false;
+                    btnUsuarios.Visible = false;
+                }
+                else if (_usuarioSesion.Rol == "Supervisor")
+                {
+                    btnAuditoria.Visible = false;
                     btnUsuarios.Visible = false;
                 }
             }
@@ -160,6 +177,36 @@ namespace SistemaServicioTecnico.Vistas
         {
             SeleccionarBoton(btnCompras);
             AbrirFormularioHijo(new FrmCompras(ObtenerIdUsuarioActual()), "Compras y Proveedores");
+        }
+
+        private void btnCatalogos_Click(object sender, EventArgs e)
+        {
+            SeleccionarBoton(btnCatalogos);
+            AbrirFormularioHijo(new FrmCatalogosBase(), "Catálogos Base");
+        }
+
+        private void btnAjustes_Click(object sender, EventArgs e)
+        {
+            SeleccionarBoton(btnAjustes);
+            AbrirFormularioHijo(new FrmAjustes(ObtenerIdUsuarioActual()), "Operaciones de Taller y Ajustes");
+        }
+
+        private void btnHistorial_Click(object sender, EventArgs e)
+        {
+            SeleccionarBoton(btnHistorial);
+            AbrirFormularioHijo(new FrmHistorial(), "Historial y Búsquedas");
+        }
+
+        private void btnReportes_Click(object sender, EventArgs e)
+        {
+            SeleccionarBoton(btnReportes);
+            AbrirFormularioHijo(new FrmReportes(), "Reportes Gerenciales");
+        }
+
+        private void btnAuditoria_Click(object sender, EventArgs e)
+        {
+            SeleccionarBoton(btnAuditoria);
+            AbrirFormularioHijo(new FrmAuditoria(), "Bitácora de Auditoría");
         }
 
         private void btnUsuarios_Click(object sender, EventArgs e)

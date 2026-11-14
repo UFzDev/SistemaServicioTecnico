@@ -42,15 +42,6 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
             _dtUsuarios.Columns.Add("Correo", typeof(string));
             _dtUsuarios.Columns.Add("Activo", typeof(bool));
 
-            _dtUsuarios.Rows.Add(1, "Uriel Flores Zárate", "Administrador", "admin", "Administrador", "admin@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(2, "Carlos Mendoza Morales", "Supervisor", "cmendoza", "Supervisor", "cmendoza@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(3, "Ana Sánchez Gómez", "Recepcionista", "asanchez", "Recepcionista", "asanchez@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(4, "Paola Ríos Valencia", "Recepcionista", "prios", "Recepcionista", "prios@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(5, "Jorge Martínez Castillo", "Tecnico", "jmartinez", "Tecnico", "jmartinez@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(6, "Luis García Hernández", "Tecnico", "lgarcia", "Tecnico", "lgarcia@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(7, "David Pérez López", "Tecnico", "dperez", "Tecnico", "dperez@serviciotecnico.com", true);
-            _dtUsuarios.Rows.Add(8, "Roberto Cruz Estrada", "Auditor", "rcruz", "Tecnico", "rcruz@serviciotecnico.com", true);
-
             dgvUsuarios.DataSource = _dtUsuarios;
             if (dgvUsuarios.Columns["IdUsuario"] != null)
             {
@@ -94,7 +85,7 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
             txtEmpleado.Clear();
             txtUsuario.Clear();
             txtCorreo.Clear();
-            txtContrasena.Text = "admin123";
+            txtContrasena.Clear();
             chkActivo.Checked = true;
             txtEmpleado.Focus();
         }

@@ -403,7 +403,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblCard1Valor.Name = "lblCard1Valor";
             this.lblCard1Valor.Size = new System.Drawing.Size(56, 45);
             this.lblCard1Valor.TabIndex = 1;
-            this.lblCard1Valor.Text = "12";
+            this.lblCard1Valor.Text = "0";
             // 
             // pnlCard2
             // 
@@ -435,7 +435,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblCard2Valor.Name = "lblCard2Valor";
             this.lblCard2Valor.Size = new System.Drawing.Size(38, 45);
             this.lblCard2Valor.TabIndex = 1;
-            this.lblCard2Valor.Text = "8";
+            this.lblCard2Valor.Text = "0";
             // 
             // pnlCard3
             // 
@@ -467,7 +467,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblCard3Valor.Name = "lblCard3Valor";
             this.lblCard3Valor.Size = new System.Drawing.Size(56, 45);
             this.lblCard3Valor.TabIndex = 1;
-            this.lblCard3Valor.Text = "45";
+            this.lblCard3Valor.Text = "0";
             // 
             // pnlCard4
             // 
@@ -499,7 +499,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblCard4Valor.Name = "lblCard4Valor";
             this.lblCard4Valor.Size = new System.Drawing.Size(38, 45);
             this.lblCard4Valor.TabIndex = 1;
-            this.lblCard4Valor.Text = "3";
+            this.lblCard4Valor.Text = "0";
             // 
             // FrmMenuPrincipal
             // 

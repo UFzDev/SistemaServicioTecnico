@@ -26,17 +26,8 @@ namespace SistemaServicioTecnico.Vistas.Procesos
 
         private void InicializarCatalogos()
         {
-            _equiposPorCliente["Alejandro Gómez Ruiz"] = new[] { "HP Pavilion 15-dk0020la (S/N: 5CD9321ABC)", "Samsung Galaxy S21 Ultra (S/N: R58M901XYZ)" };
-            _equiposPorCliente["Mariana Torres Domínguez"] = new[] { "Dell Inspiron 3501 (S/N: 8HK2199KLM)", "Apple iPad Air 4ta Gen (S/N: DMPZ1990OPQ)" };
-            _equiposPorCliente["Javier Herrera Bravo"] = new[] { "Asus ROG Strix G15 (S/N: K9N01234ASU)" };
-            _equiposPorCliente["Sofía Camacho Solís"] = new[] { "Lenovo ThinkPad T14 Gen 2 (S/N: PF299901LEN)" };
-            _equiposPorCliente["Ricardo Salazar Peña"] = new[] { "Sony PlayStation 5 Standard (S/N: FC102938475)" };
-
+            _equiposPorCliente.Clear();
             cboCliente.Items.Clear();
-            foreach (string cliente in _equiposPorCliente.Keys)
-            {
-                cboCliente.Items.Add(cliente);
-            }
 
             string[] estados = {
                 "Recibida",
@@ -58,23 +49,11 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             cboFiltroEstado.Items.AddRange(estados);
             cboFiltroEstado.SelectedIndex = 0;
 
-            _preciosServicio["Diagnóstico General en Banco"] = 150.00m;
-            _preciosServicio["Mantenimiento Preventivo Básico Laptop"] = 350.00m;
-            _preciosServicio["Formateo e Instalación de Sistema Operativo"] = 400.00m;
-            _preciosServicio["Mantenimiento Correctivo con Reemplazo"] = 400.00m;
-            _preciosServicio["Reparación de Centro de Carga Laptop"] = 550.00m;
-            _preciosServicio["Mantenimiento Completo PC Gamer"] = 650.00m;
-            _preciosServicio["Recuperación de Información en Disco"] = 800.00m;
-
+            _preciosServicio.Clear();
             cboServicioRapido.Items.Clear();
-            foreach (string srv in _preciosServicio.Keys)
-            {
-                cboServicioRapido.Items.Add(srv);
-            }
 
             if (cboCliente.Items.Count > 0) cboCliente.SelectedIndex = 0;
             if (cboEstado.Items.Count > 0) cboEstado.SelectedIndex = 0;
-            if (cboServicioRapido.Items.Count > 0) cboServicioRapido.SelectedIndex = 1;
         }
 
         private void InicializarTablaOrdenes()
@@ -89,41 +68,6 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             _dtOrdenes.Columns.Add("Estado", typeof(string));
             _dtOrdenes.Columns.Add("Presupuesto", typeof(decimal));
             _dtOrdenes.Columns.Add("FechaPrometida", typeof(string));
-
-            _dtOrdenes.Rows.Add(
-                "OS-2026-0001", "10/11/2026", "Alejandro Gómez Ruiz",
-                "HP Pavilion 15-dk0020la (S/N: 5CD9321ABC)",
-                "Se calienta mucho y se apaga al abrir juegos.",
-                "Ventilador obstruido por polvo y pasta térmica seca.",
-                "En Reparación", 350.00m, "12/11/2026");
-
-            _dtOrdenes.Rows.Add(
-                "OS-2026-0002", "10/11/2026", "Mariana Torres Domínguez",
-                "Dell Inspiron 3501 (S/N: 8HK2199KLM)",
-                "Sistema operativo muy lento y pantallas azules al iniciar.",
-                "Respaldo de información y formateo limpio con Windows 11.",
-                "Terminada / Lista", 400.00m, "11/11/2026");
-
-            _dtOrdenes.Rows.Add(
-                "OS-2026-0003", "11/11/2026", "Javier Herrera Bravo",
-                "Asus ROG Strix G15 (S/N: K9N01234ASU)",
-                "No da video por HDMI y los ventiladores suenan fuerte.",
-                "En revisión de GPU y limpieza ultrasónica.",
-                "En Diagnóstico", 650.00m, "14/11/2026");
-
-            _dtOrdenes.Rows.Add(
-                "OS-2026-0004", "11/11/2026", "Sofía Camacho Solís",
-                "Lenovo ThinkPad T14 Gen 2 (S/N: PF299901LEN)",
-                "Falso contacto al conectar el cargador, no carga batería.",
-                "Requiere reemplazo y soldadura de conector Jack DC.",
-                "Esperando Refacción", 550.00m, "15/11/2026");
-
-            _dtOrdenes.Rows.Add(
-                "OS-2026-0005", "11/11/2026", "Ricardo Salazar Peña",
-                "Sony PlayStation 5 Standard (S/N: FC102938475)",
-                "Se apaga tras 20 minutos de juego por sobrecalentamiento.",
-                "Recepción en mostrador para revisión de metal líquido.",
-                "Recibida", 650.00m, "14/11/2026");
 
             dgvOrdenes.DataSource = _dtOrdenes;
             if (dgvOrdenes.Columns["Diagnostico"] != null) dgvOrdenes.Columns["Diagnostico"].Visible = false;
@@ -220,12 +164,13 @@ namespace SistemaServicioTecnico.Vistas.Procesos
         private void PrepararNuevaOrden()
         {
             _folioSeleccionado = null;
-            int siguienteNumero = (_dtOrdenes != null ? _dtOrdenes.Rows.Count : 5) + 1;
+            int siguienteNumero = (_dtOrdenes != null ? _dtOrdenes.Rows.Count : 0) + 1;
             txtFolio.Text = string.Format("OS-2026-{0:D4}", siguienteNumero);
             if (cboEstado.Items.Count > 0) cboEstado.SelectedIndex = 0;
             dtpFechaPrometida.Value = DateTime.Now.AddDays(2);
             txtFallaReportada.Clear();
             txtDiagnostico.Clear();
+            txtPresupuesto.Text = "0.00";
             txtFallaReportada.Focus();
         }
 

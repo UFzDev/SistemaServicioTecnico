@@ -54,18 +54,6 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             _dtServicios.Columns.Add("PrecioBase", typeof(decimal));
             _dtServicios.Columns.Add("Activo", typeof(bool));
 
-            // Datos exactos de 04_DatosIniciales.sql
-            _dtServicios.Rows.Add(1, "Mantenimiento Preventivo", "Mantenimiento Preventivo Básico Laptop", "Limpieza interna, soplado y cambio de pasta térmica", 350.00m, true);
-            _dtServicios.Rows.Add(2, "Mantenimiento Preventivo", "Mantenimiento Preventivo Completo PC Gamer", "Desarme total, limpieza ultrasónica y pasta de alto rendimiento", 650.00m, true);
-            _dtServicios.Rows.Add(3, "Mantenimiento Correctivo", "Mantenimiento Correctivo con Reemplazo de Pieza", "Mano de obra por reemplazo de componente interno dañado", 400.00m, true);
-            _dtServicios.Rows.Add(4, "Diagnóstico y Revisión", "Diagnóstico General en Banco", "Revisión eléctrica y pruebas de componentes para cotización", 150.00m, true);
-            _dtServicios.Rows.Add(5, "Instalación de Software y SO", "Formateo e Instalación de Sistema Operativo", "Instalación limpia de Windows con drivers y paquetería básica", 400.00m, true);
-            _dtServicios.Rows.Add(6, "Instalación de Software y SO", "Limpieza y Desinfección de Malware / Virus", "Eliminación de programas espía, adware y optimización de arranque", 300.00m, true);
-            _dtServicios.Rows.Add(7, "Recuperación de Información", "Recuperación de Información en Disco Dañado", "Extracción lógica de archivos en HDD o memorias USB", 800.00m, true);
-            _dtServicios.Rows.Add(8, "Microsoldadura y Placa Base", "Reparación de Centro de Carga Laptop", "Desoldadura y reemplazo de conector Jack DC", 550.00m, true);
-            _dtServicios.Rows.Add(9, "Limpieza y Cambio de Pasta Térmica", "Limpieza Química y Mantenimiento de Impresora", "Destapado de cabezales y purgado de mangueras de tinta", 450.00m, true);
-            _dtServicios.Rows.Add(10, "Configuración de Redes y Servidores", "Configuración de Red Local y Servidor de Archivos", "Instalación de almacenamiento NAS y compartición segura", 950.00m, true);
-
             dgvServicios.DataSource = _dtServicios;
 
             if (dgvServicios.Columns["IdServicio"] != null)
@@ -149,7 +137,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             if (cboCategoria.Items.Count > 0) cboCategoria.SelectedIndex = 0;
             txtNombreServicio.Clear();
             txtDescripcion.Clear();
-            txtPrecioBase.Text = "350.00";
+            txtPrecioBase.Text = "0.00";
             chkServicioActivo.Checked = true;
             lblEstadoEdicion.Text = "(Modo: Nuevo Servicio)";
             txtNombreServicio.Focus();

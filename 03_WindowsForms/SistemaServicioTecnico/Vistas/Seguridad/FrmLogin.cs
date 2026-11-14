@@ -12,8 +12,6 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
         public FrmLogin()
         {
             InitializeComponent();
-            txtUsuario.Text = "admin";
-            txtContrasena.Text = "admin123";
         }
 
         private void btnIngresar_Click(object sender, EventArgs e)
@@ -41,32 +39,13 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
                     txtContrasena.Focus();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Si la base de datos SQL Server aún no está activa localmente,
-                // permitimos entrar en Modo Diseño con las credenciales de prueba (admin / admin123).
-                if (usuario == "admin" && contrasena == "admin123")
-                {
-                    UsuarioSesion sesionDemo = new UsuarioSesion
-                    {
-                        IdUsuario = 1,
-                        NombreUsuario = "admin",
-                        IdEmpleado = 1,
-                        NombreEmpleado = "Uriel Flores Zárate",
-                        Puesto = "Administrador",
-                        IdRol = 1,
-                        Rol = "Administrador"
-                    };
-                    AbrirMenuPrincipal(sesionDemo);
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "No se pudo conectar a SQL Server. Para probar el diseño sin base de datos activa, usa:\n\nUsuario: admin\nContraseña: admin123",
-                        "Modo Diseño / Sin Conexión SQL",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
+                MessageBox.Show(
+                    "Error al conectar con la base de datos: " + ex.Message,
+                    "Error de Conexión",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 

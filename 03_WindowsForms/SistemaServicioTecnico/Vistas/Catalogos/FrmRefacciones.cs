@@ -48,14 +48,6 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             _dtRefacciones.Columns.Add("Descripcion", typeof(string));
             _dtRefacciones.Columns.Add("Activo", typeof(bool));
 
-            _dtRefacciones.Rows.Add(1, "SSD-KING-480", "Almacenamiento (SSD / HDD)", "SSD Kingston A400 480GB SATA3", 480.00m, 790.00m, 14, 5, "Unidad de estado sólido 2.5 pulgadas", true);
-            _dtRefacciones.Rows.Add(2, "SSD-NVME-1TB", "Almacenamiento (SSD / HDD)", "SSD Kingston NV2 1TB M.2 NVMe", 890.00m, 1380.00m, 8, 3, "PCIe 4.0 NVMe M.2 2280", true);
-            _dtRefacciones.Rows.Add(3, "RAM-DDR4-8G", "Memoria RAM", "Memoria RAM Kingston Fury 8GB DDR4 3200MHz", 380.00m, 650.00m, 18, 5, "SO-DIMM para Laptop", true);
-            _dtRefacciones.Rows.Add(4, "DSP-156-FHD", "Pantallas y Displays", "Display 15.6 Slim FHD 30 Pines IPS", 950.00m, 1650.00m, 3, 4, "Compatible con HP, Dell y Lenovo", true);
-            _dtRefacciones.Rows.Add(5, "BAT-HP-HT03", "Baterías y Cargadores", "Batería Original HP HT03XL Pavilion 15", 620.00m, 1100.00m, 2, 3, "Li-Ion 11.55V 41.9Wh", true);
-            _dtRefacciones.Rows.Add(6, "CRG-UNIV-65W", "Baterías y Cargadores", "Cargador USB-C 65W Multimarca", 320.00m, 580.00m, 10, 4, "Entrega de potencia PD 65W", true);
-            _dtRefacciones.Rows.Add(7, "INS-MX4-4G", "Pastas Térmicas e Insumos", "Pasta Térmica Arctic MX-4 Jeringa 4g", 110.00m, 220.00m, 22, 6, "Alta conductividad térmica", true);
-
             dgvRefacciones.DataSource = _dtRefacciones;
             if (dgvRefacciones.Columns["IdRefaccion"] != null) dgvRefacciones.Columns["IdRefaccion"].Visible = false;
             if (dgvRefacciones.Columns["Descripcion"] != null) dgvRefacciones.Columns["Descripcion"].Visible = false;
@@ -113,12 +105,12 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         private void Limpiar()
         {
             _idSeleccionado = 0;
-            txtSKU.Text = string.Format("REF-00{0}", (_dtRefacciones != null ? _dtRefacciones.Rows.Count : 7) + 1);
+            txtSKU.Clear();
             txtNombre.Clear();
-            txtCosto.Text = "300.00";
-            txtPrecioVenta.Text = "550.00";
-            txtExistencia.Text = "5";
-            txtStockMinimo.Text = "2";
+            txtCosto.Text = "0.00";
+            txtPrecioVenta.Text = "0.00";
+            txtExistencia.Text = "0";
+            txtStockMinimo.Text = "0";
             txtDescripcion.Clear();
             chkActivo.Checked = true;
             txtNombre.Focus();

@@ -24,23 +24,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         private void CargarCatalogosCombo()
         {
             cboTipoEquipo.Items.Clear();
-            cboTipoEquipo.Items.AddRange(new object[] {
-                "Laptop",
-                "PC de Escritorio",
-                "Smartphone",
-                "Tablet",
-                "Consola de Videojuegos",
-                "Impresora Multifuncional",
-                "Monitor",
-                "Servidor"
-            });
-            cboTipoEquipo.SelectedIndex = 0;
-
             cboMarca.Items.Clear();
-            cboMarca.Items.AddRange(new object[] {
-                "HP", "Dell", "Lenovo", "Apple", "Samsung", "Asus", "Acer", "Sony"
-            });
-            cboMarca.SelectedIndex = 0;
         }
 
         private void InicializarTablas()
@@ -54,14 +38,6 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             _dtClientes.Columns.Add("Direccion", typeof(string));
             _dtClientes.Columns.Add("Activo", typeof(bool));
 
-            // Datos iniciales de muestra basados en 04_DatosIniciales.sql
-            _dtClientes.Rows.Add(1, "Alejandro", "Gómez Ruiz", "7712010001", "agomez@gmail.com", "Col. Centro, Pachuca, Hgo.", true);
-            _dtClientes.Rows.Add(2, "Mariana", "Torres Domínguez", "7712010002", "mtorres@gmail.com", "Fracc. Constitución, Pachuca", true);
-            _dtClientes.Rows.Add(3, "Javier", "Herrera Bravo", "7712010003", "jherrera@hotmail.com", "Col. Morelos, Pachuca", true);
-            _dtClientes.Rows.Add(4, "Sofía", "Camacho Solís", "7712010004", "scamacho@yahoo.com", "Col. Periodistas, Pachuca", true);
-            _dtClientes.Rows.Add(5, "Ricardo", "Salazar Peña", "7712010005", "rsalazar@gmail.com", "Real del Monte, Hgo.", true);
-            _dtClientes.Rows.Add(6, "Gabriela", "Fuentes Meza", "7712010006", "gfuentes@outlook.com", "Col. Venta Prieta, Pachuca", true);
-
             _dtEquipos = new DataTable();
             _dtEquipos.Columns.Add("IdEquipo", typeof(int));
             _dtEquipos.Columns.Add("IdCliente", typeof(int));
@@ -70,15 +46,6 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             _dtEquipos.Columns.Add("Modelo", typeof(string));
             _dtEquipos.Columns.Add("Serie", typeof(string));
             _dtEquipos.Columns.Add("Caracteristicas", typeof(string));
-
-            _dtEquipos.Rows.Add(1, 1, "Laptop", "HP", "Pavilion 15-dk0020la", "5CD9321ABC", "Core i5 9th, 8GB RAM, GTX 1050");
-            _dtEquipos.Rows.Add(2, 1, "Smartphone", "Samsung", "Galaxy S21 Ultra", "R58M901XYZ", "128GB Negro Fantasma");
-            _dtEquipos.Rows.Add(3, 2, "Laptop", "Dell", "Inspiron 3501", "8HK2199KLM", "Core i3 10th, 4GB RAM, SSD 256GB");
-            _dtEquipos.Rows.Add(4, 2, "Tablet", "Apple", "iPad Air 4ta Gen", "DMPZ1990OPQ", "64GB Wi-Fi Gris Espacial");
-            _dtEquipos.Rows.Add(5, 3, "PC de Escritorio", "Asus", "ROG Strix G15", "K9N01234ASU", "Ryzen 7 5800X, 16GB RAM, RTX 3060");
-            _dtEquipos.Rows.Add(6, 4, "Laptop", "Lenovo", "ThinkPad T14 Gen 2", "PF299901LEN", "Core i7 11th, 16GB RAM");
-            _dtEquipos.Rows.Add(7, 5, "Consola de Videojuegos", "Sony", "PlayStation 5 Standard", "FC102938475", "Edición disco 825GB");
-            _dtEquipos.Rows.Add(8, 6, "Laptop", "Apple", "MacBook Air M1 2020", "C02F9812APL", "Chip M1, 8GB RAM, 256GB SSD");
 
             dgvClientes.DataSource = _dtClientes;
             if (dgvClientes.Columns["IdCliente"] != null) dgvClientes.Columns["IdCliente"].HeaderText = "ID";
@@ -211,8 +178,8 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             _dtEquipos.Rows.Add(
                 nuevoIdEquipo,
                 _idClienteSeleccionado,
-                cboTipoEquipo.SelectedItem.ToString(),
-                cboMarca.SelectedItem.ToString(),
+                cboTipoEquipo.SelectedItem != null ? cboTipoEquipo.SelectedItem.ToString() : "",
+                cboMarca.SelectedItem != null ? cboMarca.SelectedItem.ToString() : "",
                 txtModelo.Text.Trim(),
                 txtSerie.Text.Trim(),
                 txtCaracteristicas.Text.Trim());

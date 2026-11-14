@@ -22,25 +22,11 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             _dtProveedores.Columns.Add("Contacto", typeof(string));
             _dtProveedores.Columns.Add("Telefono", typeof(string));
 
-            _dtProveedores.Rows.Add("Mayorista Tecnológico de México", "MTM120315ABC", "Roberto Fuentes", "5551234501");
-            _dtProveedores.Rows.Add("CT Internacional del Noroeste", "CIN940212XYZ", "Laura Bernal", "5551234502");
-            _dtProveedores.Rows.Add("Ingram Micro México", "IMM980614123", "Mauricio Garza", "5551234503");
-            _dtProveedores.Rows.Add("Grupo CVA Mayorista", "CVA010520890", "Estela Rivas", "5551234504");
-            _dtProveedores.Rows.Add("Distribuidora de Pantallas y Displays", "DPD160418RTY", "Miguel Ángel León", "5551234507");
-
             dgvProveedores.DataSource = _dtProveedores;
 
             ActualizarComboProveedores();
 
-            cboRefaccionCompra.Items.AddRange(new object[] {
-                "SSD Kingston A400 480GB SATA3",
-                "SSD Kingston NV2 1TB M.2 NVMe",
-                "Memoria RAM Kingston Fury 8GB DDR4",
-                "Display 15.6 Slim FHD 30 Pines IPS",
-                "Batería Original HP HT03XL",
-                "Pasta Térmica Arctic MX-4 4g"
-            });
-            cboRefaccionCompra.SelectedIndex = 0;
+            cboRefaccionCompra.Items.Clear();
 
             _dtCompras = new DataTable();
             _dtCompras.Columns.Add("Folio", typeof(string));
@@ -49,10 +35,6 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             _dtCompras.Columns.Add("Refaccion", typeof(string));
             _dtCompras.Columns.Add("Cant", typeof(int));
             _dtCompras.Columns.Add("Total", typeof(decimal));
-
-            _dtCompras.Rows.Add("CMP-2026-0001", "05/11/2026", "Mayorista Tecnológico de México", "SSD Kingston A400 480GB SATA3", 10, 4800.00m);
-            _dtCompras.Rows.Add("CMP-2026-0002", "07/11/2026", "Grupo CVA Mayorista", "Memoria RAM Kingston Fury 8GB DDR4", 12, 4560.00m);
-            _dtCompras.Rows.Add("CMP-2026-0003", "10/11/2026", "Distribuidora de Pantallas y Displays", "Display 15.6 Slim FHD 30 Pines IPS", 4, 3800.00m);
 
             dgvCompras.DataSource = _dtCompras;
             if (dgvCompras.Columns["Total"] != null) dgvCompras.Columns["Total"].DefaultCellStyle.Format = "C2";
@@ -72,7 +54,7 @@ namespace SistemaServicioTecnico.Vistas.Procesos
 
         private void PrepararFolioCompra()
         {
-            int sig = (_dtCompras != null ? _dtCompras.Rows.Count : 3) + 1;
+            int sig = (_dtCompras != null ? _dtCompras.Rows.Count : 0) + 1;
             txtFolioCompra.Text = string.Format("CMP-2026-{0:D4}", sig);
         }
 
@@ -113,8 +95,8 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             _dtCompras.Rows.Add(
                 folio,
                 DateTime.Now.ToString("dd/MM/yyyy"),
-                cboProveedorCompra.SelectedItem.ToString(),
-                cboRefaccionCompra.SelectedItem.ToString(),
+                cboProveedorCompra.SelectedItem != null ? cboProveedorCompra.SelectedItem.ToString() : "",
+                cboRefaccionCompra.SelectedItem != null ? cboRefaccionCompra.SelectedItem.ToString() : "",
                 cant,
                 total);
 

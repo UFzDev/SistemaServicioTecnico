@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SistemaServicioTecnico.BLL;
 using SistemaServicioTecnico.Entidades;
 using SistemaServicioTecnico.Vistas.Catalogos;
 using SistemaServicioTecnico.Vistas.Procesos;
@@ -11,6 +12,7 @@ namespace SistemaServicioTecnico.Vistas
     public partial class FrmMenuPrincipal : Form
     {
         private readonly UsuarioSesion _usuarioSesion;
+        private readonly DashboardBLL _dashboardBLL = new DashboardBLL();
         private Form _formularioActivo = null;
         private Button _botonSeleccionado = null;
 
@@ -23,7 +25,34 @@ namespace SistemaServicioTecnico.Vistas
             _usuarioSesion = usuarioSesion;
             InitializeComponent();
             ConfigurarSesion();
+            CargarResumenDashboard();
             SeleccionarBoton(btnDashboard);
+        }
+
+        private int ObtenerIdUsuarioActual()
+        {
+            return _usuarioSesion != null ? _usuarioSesion.IdUsuario : 1;
+        }
+
+        private void CargarResumenDashboard()
+        {
+            try
+            {
+                int ordenesActivas;
+                int enReparacion;
+                int totalClientes;
+                int stockAlerta;
+                _dashboardBLL.ObtenerResumen(out ordenesActivas, out enReparacion, out totalClientes, out stockAlerta);
+
+                lblCard1Valor.Text = ordenesActivas.ToString();
+                lblCard2Valor.Text = enReparacion.ToString();
+                lblCard3Valor.Text = totalClientes.ToString();
+                lblCard4Valor.Text = stockAlerta.ToString();
+            }
+            catch
+            {
+                // Mantener valores actuales si falla la consulta de resumen
+            }
         }
 
         private void ConfigurarSesion()
@@ -75,6 +104,7 @@ namespace SistemaServicioTecnico.Vistas
             if (formHijo == null)
             {
                 // Regresar a la vista de Inicio / Dashboard
+                CargarResumenDashboard();
                 pnlDashboardHome.Visible = true;
                 return;
             }
@@ -99,7 +129,7 @@ namespace SistemaServicioTecnico.Vistas
         private void btnOrdenes_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnOrdenes);
-            AbrirFormularioHijo(new FrmOrdenServicio(), "Gestión de Órdenes de Servicio");
+            AbrirFormularioHijo(new FrmOrdenServicio(ObtenerIdUsuarioActual()), "Gestión de Órdenes de Servicio");
         }
 
         private void btnClientes_Click(object sender, EventArgs e)
@@ -117,19 +147,19 @@ namespace SistemaServicioTecnico.Vistas
         private void btnRefacciones_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnRefacciones);
-            AbrirFormularioHijo(new FrmRefacciones(), "Inventario y Refacciones");
+            AbrirFormularioHijo(new FrmRefacciones(ObtenerIdUsuarioActual()), "Inventario y Refacciones");
         }
 
         private void btnVentas_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnVentas);
-            AbrirFormularioHijo(new FrmVentas(), "Venta de Refacciones y Mostrador");
+            AbrirFormularioHijo(new FrmVentas(ObtenerIdUsuarioActual()), "Venta de Refacciones y Mostrador");
         }
 
         private void btnCompras_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnCompras);
-            AbrirFormularioHijo(new FrmCompras(), "Compras y Proveedores");
+            AbrirFormularioHijo(new FrmCompras(ObtenerIdUsuarioActual()), "Compras y Proveedores");
         }
 
         private void btnUsuarios_Click(object sender, EventArgs e)

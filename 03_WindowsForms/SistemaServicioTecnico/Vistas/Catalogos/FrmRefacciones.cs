@@ -1,55 +1,67 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using SistemaServicioTecnico.BLL;
 
 namespace SistemaServicioTecnico.Vistas.Catalogos
 {
     public partial class FrmRefacciones : Form
     {
+        private readonly RefaccionBLL _refaccionBLL = new RefaccionBLL();
+        private readonly int _idUsuarioActual;
         private DataTable _dtRefacciones;
         private int _idSeleccionado = 0;
 
-        public FrmRefacciones()
+        public FrmRefacciones() : this(1)
         {
+        }
+
+        public FrmRefacciones(int idUsuarioActual)
+        {
+            _idUsuarioActual = idUsuarioActual;
             InitializeComponent();
         }
 
         private void FrmRefacciones_Load(object sender, EventArgs e)
         {
-            string[] categorias = {
-                "Almacenamiento (SSD / HDD)",
-                "Memoria RAM",
-                "Pantallas y Displays",
-                "Baterías y Cargadores",
-                "Teclados y Touchpads",
-                "Fuentes de Poder",
-                "Ventiladores y Disipadores",
-                "Pastas Térmicas e Insumos"
-            };
+            try
+            {
+                CargarCategorias();
+                CargarRefacciones();
+                Limpiar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar refacciones: " + ex.Message, "Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-            cboCategoria.Items.Clear();
-            cboCategoria.Items.AddRange(categorias);
-            cboCategoria.SelectedIndex = 0;
+        private void CargarCategorias()
+        {
+            DataTable dtCats = _refaccionBLL.ObtenerCategorias();
+            cboCategoria.DataSource = dtCats;
+            cboCategoria.DisplayMember = "Nombre";
+            cboCategoria.ValueMember = "IdCategoriaRefaccion";
 
-            cboFiltroCategoria.Items.Clear();
-            cboFiltroCategoria.Items.Add("Todas las Categorías");
-            cboFiltroCategoria.Items.AddRange(categorias);
+            DataTable dtFiltro = dtCats.Copy();
+            DataRow filaTodas = dtFiltro.NewRow();
+            filaTodas["IdCategoriaRefaccion"] = 0;
+            filaTodas["Nombre"] = "Todas las Categorías";
+            dtFiltro.Rows.InsertAt(filaTodas, 0);
+
+            cboFiltroCategoria.DataSource = dtFiltro;
+            cboFiltroCategoria.DisplayMember = "Nombre";
+            cboFiltroCategoria.ValueMember = "IdCategoriaRefaccion";
             cboFiltroCategoria.SelectedIndex = 0;
+        }
 
-            _dtRefacciones = new DataTable();
-            _dtRefacciones.Columns.Add("IdRefaccion", typeof(int));
-            _dtRefacciones.Columns.Add("SKU", typeof(string));
-            _dtRefacciones.Columns.Add("Categoria", typeof(string));
-            _dtRefacciones.Columns.Add("Nombre", typeof(string));
-            _dtRefacciones.Columns.Add("Costo", typeof(decimal));
-            _dtRefacciones.Columns.Add("PrecioVenta", typeof(decimal));
-            _dtRefacciones.Columns.Add("Existencia", typeof(int));
-            _dtRefacciones.Columns.Add("StockMinimo", typeof(int));
-            _dtRefacciones.Columns.Add("Descripcion", typeof(string));
-            _dtRefacciones.Columns.Add("Activo", typeof(bool));
-
+        private void CargarRefacciones()
+        {
+            _dtRefacciones = _refaccionBLL.ObtenerRefacciones();
             dgvRefacciones.DataSource = _dtRefacciones;
+
             if (dgvRefacciones.Columns["IdRefaccion"] != null) dgvRefacciones.Columns["IdRefaccion"].Visible = false;
+            if (dgvRefacciones.Columns["IdCategoriaRefaccion"] != null) dgvRefacciones.Columns["IdCategoriaRefaccion"].Visible = false;
             if (dgvRefacciones.Columns["Descripcion"] != null) dgvRefacciones.Columns["Descripcion"].Visible = false;
             if (dgvRefacciones.Columns["Costo"] != null) dgvRefacciones.Columns["Costo"].DefaultCellStyle.Format = "C2";
             if (dgvRefacciones.Columns["PrecioVenta"] != null)
@@ -58,8 +70,6 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 dgvRefacciones.Columns["PrecioVenta"].DefaultCellStyle.Format = "C2";
             }
             if (dgvRefacciones.Columns["StockMinimo"] != null) dgvRefacciones.Columns["StockMinimo"].HeaderText = "Mínimo";
-
-            Limpiar();
         }
 
         private void dgvRefacciones_SelectionChanged(object sender, EventArgs e)
@@ -70,8 +80,10 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 DataRow fila = rowView.Row;
                 _idSeleccionado = Convert.ToInt32(fila["IdRefaccion"]);
                 txtSKU.Text = fila["SKU"].ToString();
-                string cat = fila["Categoria"].ToString();
-                if (cboCategoria.Items.Contains(cat)) cboCategoria.SelectedItem = cat;
+                if (fila["IdCategoriaRefaccion"] != DBNull.Value)
+                {
+                    cboCategoria.SelectedValue = Convert.ToInt32(fila["IdCategoriaRefaccion"]);
+                }
                 txtNombre.Text = fila["Nombre"].ToString();
                 txtCosto.Text = Convert.ToDecimal(fila["Costo"]).ToString("0.00");
                 txtPrecioVenta.Text = Convert.ToDecimal(fila["PrecioVenta"]).ToString("0.00");
@@ -87,16 +99,16 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             if (_dtRefacciones == null) return;
 
             string texto = txtBuscar.Text.Trim().Replace("'", "''");
-            string cat = cboFiltroCategoria.SelectedItem != null ? cboFiltroCategoria.SelectedItem.ToString() : "Todas las Categorías";
+            string cat = cboFiltroCategoria.Text;
 
             string filtro = "";
             if (!string.IsNullOrEmpty(texto))
                 filtro = string.Format("(SKU LIKE '%{0}%' OR Nombre LIKE '%{0}%')", texto);
 
-            if (cat != "Todas las Categorías")
+            if (!string.IsNullOrEmpty(cat) && cat != "Todas las Categorías")
             {
                 if (!string.IsNullOrEmpty(filtro)) filtro += " AND ";
-                filtro += string.Format("Categoria = '{0}'", cat);
+                filtro += string.Format("Categoria = '{0}'", cat.Replace("'", "''"));
             }
 
             _dtRefacciones.DefaultView.RowFilter = filtro;
@@ -129,6 +141,12 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 return;
             }
 
+            if (cboCategoria.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccione una categoría.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             decimal costo = 0, precio = 0;
             int existencia = 0, minimo = 0;
             decimal.TryParse(txtCosto.Text, out costo);
@@ -136,40 +154,36 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             int.TryParse(txtExistencia.Text, out existencia);
             int.TryParse(txtStockMinimo.Text, out minimo);
 
-            if (_idSeleccionado == 0)
+            try
             {
-                int nuevoId = _dtRefacciones.Rows.Count + 1;
-                _dtRefacciones.Rows.Add(
-                    nuevoId,
-                    txtSKU.Text.Trim(),
-                    cboCategoria.SelectedItem.ToString(),
-                    txtNombre.Text.Trim(),
-                    costo, precio, existencia, minimo,
-                    txtDescripcion.Text.Trim(),
-                    chkActivo.Checked);
+                bool esNuevo = (_idSeleccionado == 0);
+                int idCat = Convert.ToInt32(cboCategoria.SelectedValue);
 
-                MessageBox.Show("Refacción agregada al inventario exitosamente.", "Inventario", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Limpiar();
+                _refaccionBLL.GuardarRefaccion(
+                    _idSeleccionado,
+                    idCat,
+                    txtSKU.Text,
+                    txtNombre.Text,
+                    txtDescripcion.Text,
+                    costo,
+                    precio,
+                    minimo,
+                    existencia,
+                    chkActivo.Checked,
+                    _idUsuarioActual);
+
+                CargarRefacciones();
+                if (esNuevo) Limpiar();
+
+                MessageBox.Show(
+                    esNuevo ? "Refacción agregada al inventario exitosamente." : "Inventario de la refacción actualizado correctamente.",
+                    "Inventario",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
-            else
+            catch (Exception ex)
             {
-                foreach (DataRow fila in _dtRefacciones.Rows)
-                {
-                    if (Convert.ToInt32(fila["IdRefaccion"]) == _idSeleccionado)
-                    {
-                        fila["SKU"] = txtSKU.Text.Trim();
-                        fila["Categoria"] = cboCategoria.SelectedItem.ToString();
-                        fila["Nombre"] = txtNombre.Text.Trim();
-                        fila["Costo"] = costo;
-                        fila["PrecioVenta"] = precio;
-                        fila["Existencia"] = existencia;
-                        fila["StockMinimo"] = minimo;
-                        fila["Descripcion"] = txtDescripcion.Text.Trim();
-                        fila["Activo"] = chkActivo.Checked;
-                        break;
-                    }
-                }
-                MessageBox.Show("Inventario de la refacción actualizado correctamente.", "Inventario", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Error al guardar refacción: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

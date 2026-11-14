@@ -1,11 +1,13 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using SistemaServicioTecnico.BLL;
 
 namespace SistemaServicioTecnico.Vistas.Seguridad
 {
     public partial class FrmUsuarios : Form
     {
+        private readonly SeguridadBLL _seguridadBLL = new SeguridadBLL();
         private DataTable _dtUsuarios;
         private int _idSeleccionado = 0;
 
@@ -16,40 +18,45 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
 
         private void FrmUsuarios_Load(object sender, EventArgs e)
         {
-            cboPuesto.Items.AddRange(new object[] {
-                "Administrador",
-                "Supervisor",
-                "Recepcionista",
-                "Tecnico",
-                "Auditor"
-            });
-            cboPuesto.SelectedIndex = 3;
+            try
+            {
+                cboPuesto.Items.Clear();
+                cboPuesto.Items.AddRange(new object[] {
+                    "Administrador",
+                    "Supervisor",
+                    "Recepcionista",
+                    "Tecnico",
+                    "Auditor"
+                });
+                cboPuesto.SelectedIndex = 3;
 
-            cboRol.Items.AddRange(new object[] {
-                "Administrador",
-                "Supervisor",
-                "Recepcionista",
-                "Tecnico"
-            });
-            cboRol.SelectedIndex = 3;
+                cboRol.Items.Clear();
+                cboRol.Items.AddRange(new object[] {
+                    "Administrador",
+                    "Supervisor",
+                    "Recepcionista",
+                    "Tecnico"
+                });
+                cboRol.SelectedIndex = 3;
 
-            _dtUsuarios = new DataTable();
-            _dtUsuarios.Columns.Add("IdUsuario", typeof(int));
-            _dtUsuarios.Columns.Add("Empleado", typeof(string));
-            _dtUsuarios.Columns.Add("Puesto", typeof(string));
-            _dtUsuarios.Columns.Add("Usuario", typeof(string));
-            _dtUsuarios.Columns.Add("Rol", typeof(string));
-            _dtUsuarios.Columns.Add("Correo", typeof(string));
-            _dtUsuarios.Columns.Add("Activo", typeof(bool));
+                CargarUsuarios();
+                Limpiar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar usuarios: " + ex.Message, "Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
+        private void CargarUsuarios()
+        {
+            _dtUsuarios = _seguridadBLL.ObtenerUsuarios();
             dgvUsuarios.DataSource = _dtUsuarios;
             if (dgvUsuarios.Columns["IdUsuario"] != null)
             {
                 dgvUsuarios.Columns["IdUsuario"].HeaderText = "ID";
                 dgvUsuarios.Columns["IdUsuario"].FillWeight = 30;
             }
-
-            Limpiar();
         }
 
         private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)
@@ -66,6 +73,7 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
                 string rol = fila["Rol"].ToString();
                 if (cboRol.Items.Contains(rol)) cboRol.SelectedItem = rol;
                 txtCorreo.Text = fila["Correo"].ToString();
+                txtContrasena.Clear();
                 chkActivo.Checked = Convert.ToBoolean(fila["Activo"]);
             }
         }
@@ -103,37 +111,34 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
                 return;
             }
 
-            if (_idSeleccionado == 0)
+            try
             {
-                int nuevoId = _dtUsuarios.Rows.Count + 1;
-                _dtUsuarios.Rows.Add(
-                    nuevoId,
-                    txtEmpleado.Text.Trim(),
-                    cboPuesto.SelectedItem.ToString(),
-                    txtUsuario.Text.Trim(),
-                    cboRol.SelectedItem.ToString(),
-                    txtCorreo.Text.Trim(),
+                bool esNuevo = (_idSeleccionado == 0);
+                string puesto = cboPuesto.SelectedItem != null ? cboPuesto.SelectedItem.ToString() : "Tecnico";
+                string rol = cboRol.SelectedItem != null ? cboRol.SelectedItem.ToString() : "Tecnico";
+
+                _seguridadBLL.GuardarUsuario(
+                    _idSeleccionado,
+                    txtEmpleado.Text,
+                    puesto,
+                    txtUsuario.Text,
+                    txtContrasena.Text,
+                    rol,
+                    txtCorreo.Text,
                     chkActivo.Checked);
 
-                MessageBox.Show("Usuario y rol registrados correctamente.", "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Limpiar();
+                CargarUsuarios();
+                if (esNuevo) Limpiar();
+
+                MessageBox.Show(
+                    esNuevo ? "Usuario y rol registrados correctamente en SQL Server." : "Datos del usuario actualizados correctamente.",
+                    "Seguridad",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
-            else
+            catch (Exception ex)
             {
-                foreach (DataRow fila in _dtUsuarios.Rows)
-                {
-                    if (Convert.ToInt32(fila["IdUsuario"]) == _idSeleccionado)
-                    {
-                        fila["Empleado"] = txtEmpleado.Text.Trim();
-                        fila["Puesto"] = cboPuesto.SelectedItem.ToString();
-                        fila["Usuario"] = txtUsuario.Text.Trim();
-                        fila["Rol"] = cboRol.SelectedItem.ToString();
-                        fila["Correo"] = txtCorreo.Text.Trim();
-                        fila["Activo"] = chkActivo.Checked;
-                        break;
-                    }
-                }
-                MessageBox.Show("Datos del usuario actualizados correctamente.", "Seguridad", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Error al guardar usuario: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

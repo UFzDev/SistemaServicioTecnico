@@ -1,56 +1,77 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using SistemaServicioTecnico.BLL;
 
 namespace SistemaServicioTecnico.Vistas.Procesos
 {
     public partial class FrmVentas : Form
     {
+        private readonly VentaBLL _ventaBLL = new VentaBLL();
+        private readonly OrdenServicioBLL _ordenBLL = new OrdenServicioBLL();
+        private readonly RefaccionBLL _refaccionBLL = new RefaccionBLL();
+        private readonly int _idUsuarioActual;
         private DataTable _dtVentas;
-        private readonly Dictionary<string, decimal> _preciosRefaccion = new Dictionary<string, decimal>();
 
-        public FrmVentas()
+        public FrmVentas() : this(1)
         {
+        }
+
+        public FrmVentas(int idUsuarioActual)
+        {
+            _idUsuarioActual = idUsuarioActual;
             InitializeComponent();
         }
 
         private void FrmVentas_Load(object sender, EventArgs e)
         {
-            cboCliente.Items.Clear();
-            _preciosRefaccion.Clear();
-            cboRefaccion.Items.Clear();
+            try
+            {
+                CargarCombos();
+                CargarVentas();
+                Limpiar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar ventas: " + ex.Message, "Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-            cboMetodoPago.Items.AddRange(new object[] {
-                "Efectivo",
-                "Tarjeta de Débito",
-                "Tarjeta de Crédito",
-                "Transferencia SPEI"
-            });
-            cboMetodoPago.SelectedIndex = 0;
+        private void CargarCombos()
+        {
+            DataTable dtClientes = _ordenBLL.ObtenerClientesCombo();
+            cboCliente.DataSource = dtClientes;
+            cboCliente.DisplayMember = "NombreCompleto";
+            cboCliente.ValueMember = "IdCliente";
 
-            _dtVentas = new DataTable();
-            _dtVentas.Columns.Add("Folio", typeof(string));
-            _dtVentas.Columns.Add("Fecha", typeof(string));
-            _dtVentas.Columns.Add("Cliente", typeof(string));
-            _dtVentas.Columns.Add("Refaccion", typeof(string));
-            _dtVentas.Columns.Add("Cantidad", typeof(int));
-            _dtVentas.Columns.Add("Total", typeof(decimal));
-            _dtVentas.Columns.Add("MetodoPago", typeof(string));
-            _dtVentas.Columns.Add("Estado", typeof(string));
+            DataTable dtRef = _refaccionBLL.ObtenerRefacciones();
+            DataView dvActivas = new DataView(dtRef);
+            dvActivas.RowFilter = "Activo = true";
 
+            cboRefaccion.DataSource = dvActivas;
+            cboRefaccion.DisplayMember = "Nombre";
+            cboRefaccion.ValueMember = "IdRefaccion";
+
+            DataTable dtMetodos = _ventaBLL.ObtenerMetodosPago();
+            cboMetodoPago.DataSource = dtMetodos;
+            cboMetodoPago.DisplayMember = "Nombre";
+            cboMetodoPago.ValueMember = "IdMetodoPago";
+        }
+
+        private void CargarVentas()
+        {
+            _dtVentas = _ventaBLL.ObtenerVentas();
             dgvVentas.DataSource = _dtVentas;
             if (dgvVentas.Columns["Total"] != null) dgvVentas.Columns["Total"].DefaultCellStyle.Format = "C2";
             if (dgvVentas.Columns["MetodoPago"] != null) dgvVentas.Columns["MetodoPago"].HeaderText = "Método Pago";
-
-            Limpiar();
         }
 
         private void cboRefaccion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cboRefaccion.SelectedItem != null && _preciosRefaccion.ContainsKey(cboRefaccion.SelectedItem.ToString()))
+            DataRowView drv = cboRefaccion.SelectedItem as DataRowView;
+            if (drv != null && drv.Row["PrecioVenta"] != DBNull.Value)
             {
-                txtPrecioUnitario.Text = _preciosRefaccion[cboRefaccion.SelectedItem.ToString()].ToString("0.00");
+                txtPrecioUnitario.Text = Convert.ToDecimal(drv.Row["PrecioVenta"]).ToString("0.00");
             }
         }
 
@@ -65,10 +86,8 @@ namespace SistemaServicioTecnico.Vistas.Procesos
 
         private void Limpiar()
         {
-            int sig = (_dtVentas != null ? _dtVentas.Rows.Count : 0) + 1;
-            txtFolio.Text = string.Format("VTA-2026-{0:D4}", sig);
+            txtFolio.Text = _ventaBLL.ObtenerSiguienteFolio();
             txtCantidad.Text = "1";
-            txtPrecioUnitario.Text = "0.00";
             txtObservaciones.Clear();
         }
 
@@ -79,7 +98,13 @@ namespace SistemaServicioTecnico.Vistas.Procesos
 
         private void btnRegistrar_Click(object sender, EventArgs e)
         {
-            int cantidad = 1;
+            if (cboCliente.SelectedValue == null || cboRefaccion.SelectedValue == null || cboMetodoPago.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccione cliente, refacción y método de pago.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int cantidad = 0;
             decimal precio = 0;
             if (!int.TryParse(txtCantidad.Text, out cantidad) || cantidad <= 0)
             {
@@ -89,19 +114,28 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             decimal.TryParse(txtPrecioUnitario.Text, out precio);
             decimal total = cantidad * precio;
 
-            string folio = txtFolio.Text;
-            _dtVentas.Rows.Add(
-                folio,
-                DateTime.Now.ToString("dd/MM/yyyy"),
-                cboCliente.SelectedItem != null ? cboCliente.SelectedItem.ToString() : "",
-                cboRefaccion.SelectedItem != null ? cboRefaccion.SelectedItem.ToString() : "",
-                cantidad,
-                total,
-                cboMetodoPago.SelectedItem != null ? cboMetodoPago.SelectedItem.ToString() : "",
-                "Confirmada");
+            try
+            {
+                int idCliente = Convert.ToInt32(cboCliente.SelectedValue);
+                int idRefaccion = Convert.ToInt32(cboRefaccion.SelectedValue);
+                int idMetodo = Convert.ToInt32(cboMetodoPago.SelectedValue);
+                string folioMostrado = txtFolio.Text;
 
-            MessageBox.Show(string.Format("Venta [{0}] registrada por un total de {1:C2}.", folio, total), "Venta Confirmada", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Limpiar();
+                _ventaBLL.RegistrarVenta(idCliente, _idUsuarioActual, idRefaccion, cantidad, idMetodo);
+
+                CargarVentas();
+                Limpiar();
+
+                MessageBox.Show(
+                    string.Format("Venta [{0}] registrada por un total de {1:C2} en SQL Server.", folioMostrado, total),
+                    "Venta Confirmada",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al registrar venta: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

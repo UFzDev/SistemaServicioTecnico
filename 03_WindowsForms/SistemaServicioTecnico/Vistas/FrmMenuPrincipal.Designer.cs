@@ -94,7 +94,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnCerrarSesion.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnCerrarSesion.Size = new System.Drawing.Size(240, 50);
             this.btnCerrarSesion.TabIndex = 9;
-            this.btnCerrarSesion.Text = "🚪   Cerrar Sesión";
+            this.btnCerrarSesion.Text = "Salir";
             this.btnCerrarSesion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCerrarSesion.UseVisualStyleBackColor = true;
             this.btnCerrarSesion.Click += new System.EventHandler(this.btnCerrarSesion_Click);
@@ -114,7 +114,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnUsuarios.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnUsuarios.Size = new System.Drawing.Size(240, 46);
             this.btnUsuarios.TabIndex = 8;
-            this.btnUsuarios.Text = "🔐   Seguridad / Usuarios";
+            this.btnUsuarios.Text = "Usuarios";
             this.btnUsuarios.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnUsuarios.UseVisualStyleBackColor = true;
             this.btnUsuarios.Click += new System.EventHandler(this.btnUsuarios_Click);
@@ -134,7 +134,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnCompras.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnCompras.Size = new System.Drawing.Size(240, 46);
             this.btnCompras.TabIndex = 7;
-            this.btnCompras.Text = "🚚   Compras / Proveedores";
+            this.btnCompras.Text = "Compras";
             this.btnCompras.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCompras.UseVisualStyleBackColor = true;
             this.btnCompras.Click += new System.EventHandler(this.btnCompras_Click);
@@ -154,7 +154,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnVentas.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnVentas.Size = new System.Drawing.Size(240, 46);
             this.btnVentas.TabIndex = 6;
-            this.btnVentas.Text = "🛒   Venta Refacciones";
+            this.btnVentas.Text = "Ventas";
             this.btnVentas.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnVentas.UseVisualStyleBackColor = true;
             this.btnVentas.Click += new System.EventHandler(this.btnVentas_Click);
@@ -174,7 +174,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnRefacciones.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnRefacciones.Size = new System.Drawing.Size(240, 46);
             this.btnRefacciones.TabIndex = 5;
-            this.btnRefacciones.Text = "📦   Inventario / Refacciones";
+            this.btnRefacciones.Text = "Refacciones";
             this.btnRefacciones.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnRefacciones.UseVisualStyleBackColor = true;
             this.btnRefacciones.Click += new System.EventHandler(this.btnRefacciones_Click);
@@ -194,7 +194,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnServicios.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnServicios.Size = new System.Drawing.Size(240, 46);
             this.btnServicios.TabIndex = 4;
-            this.btnServicios.Text = "🛠️   Catálogo Servicios";
+            this.btnServicios.Text = "Servicios";
             this.btnServicios.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnServicios.UseVisualStyleBackColor = true;
             this.btnServicios.Click += new System.EventHandler(this.btnServicios_Click);
@@ -214,7 +214,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnClientes.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnClientes.Size = new System.Drawing.Size(240, 46);
             this.btnClientes.TabIndex = 3;
-            this.btnClientes.Text = "👥   Clientes y Equipos";
+            this.btnClientes.Text = "Clientes";
             this.btnClientes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnClientes.UseVisualStyleBackColor = true;
             this.btnClientes.Click += new System.EventHandler(this.btnClientes_Click);
@@ -234,7 +234,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnOrdenes.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnOrdenes.Size = new System.Drawing.Size(240, 46);
             this.btnOrdenes.TabIndex = 2;
-            this.btnOrdenes.Text = "📋   Órdenes de Servicio";
+            this.btnOrdenes.Text = "Órdenes";
             this.btnOrdenes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnOrdenes.UseVisualStyleBackColor = true;
             this.btnOrdenes.Click += new System.EventHandler(this.btnOrdenes_Click);
@@ -254,7 +254,7 @@ namespace SistemaServicioTecnico.Vistas
             this.btnDashboard.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnDashboard.Size = new System.Drawing.Size(240, 46);
             this.btnDashboard.TabIndex = 1;
-            this.btnDashboard.Text = "📊   Dashboard / Inicio";
+            this.btnDashboard.Text = "Inicio";
             this.btnDashboard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnDashboard.UseVisualStyleBackColor = true;
             this.btnDashboard.Click += new System.EventHandler(this.btnDashboard_Click);

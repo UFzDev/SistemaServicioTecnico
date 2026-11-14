@@ -1,11 +1,13 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using SistemaServicioTecnico.BLL;
 
 namespace SistemaServicioTecnico.Vistas.Catalogos
 {
     public partial class FrmClientes : Form
     {
+        private readonly ClienteBLL _clienteBLL = new ClienteBLL();
         private DataTable _dtClientes;
         private DataTable _dtEquipos;
         private int _idClienteSeleccionado = 0;
@@ -17,41 +19,48 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
 
         private void FrmClientes_Load(object sender, EventArgs e)
         {
-            CargarCatalogosCombo();
-            InicializarTablas();
+            try
+            {
+                CargarCatalogosCombo();
+                CargarDatosBD();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar datos de clientes: " + ex.Message, "Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void CargarCatalogosCombo()
         {
-            cboTipoEquipo.Items.Clear();
-            cboMarca.Items.Clear();
+            DataTable dtTipos = _clienteBLL.ObtenerTiposEquipo();
+            cboTipoEquipo.DataSource = dtTipos;
+            cboTipoEquipo.DisplayMember = "Nombre";
+            cboTipoEquipo.ValueMember = "IdTipoEquipo";
+
+            DataTable dtMarcas = _clienteBLL.ObtenerMarcas();
+            cboMarca.DataSource = dtMarcas;
+            cboMarca.DisplayMember = "Nombre";
+            cboMarca.ValueMember = "IdMarca";
         }
 
-        private void InicializarTablas()
+        private void CargarDatosBD()
         {
-            _dtClientes = new DataTable();
-            _dtClientes.Columns.Add("IdCliente", typeof(int));
-            _dtClientes.Columns.Add("Nombre", typeof(string));
-            _dtClientes.Columns.Add("Apellidos", typeof(string));
-            _dtClientes.Columns.Add("Telefono", typeof(string));
-            _dtClientes.Columns.Add("Correo", typeof(string));
-            _dtClientes.Columns.Add("Direccion", typeof(string));
-            _dtClientes.Columns.Add("Activo", typeof(bool));
-
-            _dtEquipos = new DataTable();
-            _dtEquipos.Columns.Add("IdEquipo", typeof(int));
-            _dtEquipos.Columns.Add("IdCliente", typeof(int));
-            _dtEquipos.Columns.Add("Tipo", typeof(string));
-            _dtEquipos.Columns.Add("Marca", typeof(string));
-            _dtEquipos.Columns.Add("Modelo", typeof(string));
-            _dtEquipos.Columns.Add("Serie", typeof(string));
-            _dtEquipos.Columns.Add("Caracteristicas", typeof(string));
+            _dtClientes = _clienteBLL.ObtenerClientes();
+            _dtEquipos = _clienteBLL.ObtenerEquipos();
 
             dgvClientes.DataSource = _dtClientes;
-            if (dgvClientes.Columns["IdCliente"] != null) dgvClientes.Columns["IdCliente"].HeaderText = "ID";
-            if (dgvClientes.Columns["IdCliente"] != null) dgvClientes.Columns["IdCliente"].FillWeight = 35;
+            if (dgvClientes.Columns["IdCliente"] != null)
+            {
+                dgvClientes.Columns["IdCliente"].HeaderText = "ID";
+                dgvClientes.Columns["IdCliente"].FillWeight = 35;
+            }
             if (dgvClientes.Columns["Direccion"] != null) dgvClientes.Columns["Direccion"].Visible = false;
             if (dgvClientes.Columns["Correo"] != null) dgvClientes.Columns["Correo"].Visible = false;
+
+            if (_idClienteSeleccionado > 0)
+            {
+                FiltrarEquiposCliente(_idClienteSeleccionado);
+            }
         }
 
         private void dgvClientes_SelectionChanged(object sender, EventArgs e)
@@ -126,36 +135,30 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 return;
             }
 
-            if (_idClienteSeleccionado == 0)
+            try
             {
-                int nuevoId = _dtClientes.Rows.Count + 1;
-                _dtClientes.Rows.Add(
-                    nuevoId,
-                    txtNombre.Text.Trim(),
-                    txtApellidos.Text.Trim(),
-                    txtTelefono.Text.Trim(),
-                    txtCorreo.Text.Trim(),
-                    txtDireccion.Text.Trim(),
+                bool esNuevo = (_idClienteSeleccionado == 0);
+                int idGenerado = _clienteBLL.GuardarCliente(
+                    _idClienteSeleccionado,
+                    txtNombre.Text,
+                    txtApellidos.Text,
+                    txtTelefono.Text,
+                    txtCorreo.Text,
+                    txtDireccion.Text,
                     chkClienteActivo.Checked);
 
-                MessageBox.Show("Cliente registrado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _idClienteSeleccionado = idGenerado;
+                CargarDatosBD();
+
+                MessageBox.Show(
+                    esNuevo ? "Cliente registrado correctamente en SQL Server." : "Datos del cliente actualizados correctamente.",
+                    "Éxito",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
-            else
+            catch (Exception ex)
             {
-                foreach (DataRow fila in _dtClientes.Rows)
-                {
-                    if (Convert.ToInt32(fila["IdCliente"]) == _idClienteSeleccionado)
-                    {
-                        fila["Nombre"] = txtNombre.Text.Trim();
-                        fila["Apellidos"] = txtApellidos.Text.Trim();
-                        fila["Telefono"] = txtTelefono.Text.Trim();
-                        fila["Correo"] = txtCorreo.Text.Trim();
-                        fila["Direccion"] = txtDireccion.Text.Trim();
-                        fila["Activo"] = chkClienteActivo.Checked;
-                        break;
-                    }
-                }
-                MessageBox.Show("Datos del cliente actualizados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Error al guardar cliente: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -167,6 +170,12 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 return;
             }
 
+            if (cboTipoEquipo.SelectedValue == null || cboMarca.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccione tipo de equipo y marca.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtModelo.Text))
             {
                 MessageBox.Show("El modelo del equipo es obligatorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -174,22 +183,32 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 return;
             }
 
-            int nuevoIdEquipo = _dtEquipos.Rows.Count + 1;
-            _dtEquipos.Rows.Add(
-                nuevoIdEquipo,
-                _idClienteSeleccionado,
-                cboTipoEquipo.SelectedItem != null ? cboTipoEquipo.SelectedItem.ToString() : "",
-                cboMarca.SelectedItem != null ? cboMarca.SelectedItem.ToString() : "",
-                txtModelo.Text.Trim(),
-                txtSerie.Text.Trim(),
-                txtCaracteristicas.Text.Trim());
+            try
+            {
+                int idTipo = Convert.ToInt32(cboTipoEquipo.SelectedValue);
+                int idMarca = Convert.ToInt32(cboMarca.SelectedValue);
 
-            FiltrarEquiposCliente(_idClienteSeleccionado);
-            txtModelo.Clear();
-            txtSerie.Clear();
-            txtCaracteristicas.Clear();
+                _clienteBLL.GuardarEquipo(
+                    0,
+                    _idClienteSeleccionado,
+                    idTipo,
+                    idMarca,
+                    txtModelo.Text,
+                    txtSerie.Text,
+                    txtCaracteristicas.Text,
+                    true);
 
-            MessageBox.Show("Equipo vinculado al cliente exitosamente.", "Equipo Registrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                CargarDatosBD();
+                txtModelo.Clear();
+                txtSerie.Clear();
+                txtCaracteristicas.Clear();
+
+                MessageBox.Show("Equipo vinculado al cliente exitosamente.", "Equipo Registrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar equipo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

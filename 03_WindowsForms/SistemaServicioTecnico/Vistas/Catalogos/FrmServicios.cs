@@ -1,11 +1,13 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using SistemaServicioTecnico.BLL;
 
 namespace SistemaServicioTecnico.Vistas.Catalogos
 {
     public partial class FrmServicios : Form
     {
+        private readonly ServicioBLL _servicioBLL = new ServicioBLL();
         private DataTable _dtServicios;
         private int _idServicioSeleccionado = 0;
 
@@ -16,46 +18,46 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
 
         private void FrmServicios_Load(object sender, EventArgs e)
         {
-            CargarCategorias();
-            InicializarTablaServicios();
-            LimpiarFormulario();
+            try
+            {
+                CargarCategorias();
+                CargarServicios();
+                LimpiarFormulario();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar servicios: " + ex.Message, "Base de Datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void CargarCategorias()
         {
-            string[] categorias = {
-                "Mantenimiento Preventivo",
-                "Mantenimiento Correctivo",
-                "Diagnóstico y Revisión",
-                "Instalación de Software y SO",
-                "Recuperación de Información",
-                "Microsoldadura y Placa Base",
-                "Limpieza y Cambio de Pasta Térmica",
-                "Configuración de Redes y Servidores"
-            };
+            DataTable dtCats = _servicioBLL.ObtenerCategorias();
+            cboCategoria.DataSource = dtCats;
+            cboCategoria.DisplayMember = "Nombre";
+            cboCategoria.ValueMember = "IdCategoriaServicio";
 
-            cboCategoria.Items.Clear();
-            cboCategoria.Items.AddRange(categorias);
-            cboCategoria.SelectedIndex = 0;
+            DataTable dtFiltro = dtCats.Copy();
+            DataRow filaTodas = dtFiltro.NewRow();
+            filaTodas["IdCategoriaServicio"] = 0;
+            filaTodas["Nombre"] = "Todas las Categorías";
+            dtFiltro.Rows.InsertAt(filaTodas, 0);
 
-            cboFiltroCategoria.Items.Clear();
-            cboFiltroCategoria.Items.Add("Todas las Categorías");
-            cboFiltroCategoria.Items.AddRange(categorias);
+            cboFiltroCategoria.DataSource = dtFiltro;
+            cboFiltroCategoria.DisplayMember = "Nombre";
+            cboFiltroCategoria.ValueMember = "IdCategoriaServicio";
             cboFiltroCategoria.SelectedIndex = 0;
         }
 
-        private void InicializarTablaServicios()
+        private void CargarServicios()
         {
-            _dtServicios = new DataTable();
-            _dtServicios.Columns.Add("IdServicio", typeof(int));
-            _dtServicios.Columns.Add("Categoria", typeof(string));
-            _dtServicios.Columns.Add("Nombre", typeof(string));
-            _dtServicios.Columns.Add("Descripcion", typeof(string));
-            _dtServicios.Columns.Add("PrecioBase", typeof(decimal));
-            _dtServicios.Columns.Add("Activo", typeof(bool));
-
+            _dtServicios = _servicioBLL.ObtenerServicios();
             dgvServicios.DataSource = _dtServicios;
 
+            if (dgvServicios.Columns["IdCategoriaServicio"] != null)
+            {
+                dgvServicios.Columns["IdCategoriaServicio"].Visible = false;
+            }
             if (dgvServicios.Columns["IdServicio"] != null)
             {
                 dgvServicios.Columns["IdServicio"].HeaderText = "ID";
@@ -96,9 +98,10 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 DataRow fila = rowView.Row;
                 _idServicioSeleccionado = Convert.ToInt32(fila["IdServicio"]);
 
-                string cat = fila["Categoria"].ToString();
-                if (cboCategoria.Items.Contains(cat))
-                    cboCategoria.SelectedItem = cat;
+                if (fila["IdCategoriaServicio"] != DBNull.Value)
+                {
+                    cboCategoria.SelectedValue = Convert.ToInt32(fila["IdCategoriaServicio"]);
+                }
 
                 txtNombreServicio.Text = fila["Nombre"].ToString();
                 txtDescripcion.Text = fila["Descripcion"].ToString();
@@ -114,7 +117,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             if (_dtServicios == null) return;
 
             string texto = txtBuscarServicio.Text.Trim().Replace("'", "''");
-            string categoria = cboFiltroCategoria.SelectedItem != null ? cboFiltroCategoria.SelectedItem.ToString() : "Todas las Categorías";
+            string categoria = cboFiltroCategoria.Text;
 
             string filtro = "";
             if (!string.IsNullOrEmpty(texto))
@@ -122,10 +125,10 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 filtro = string.Format("(Nombre LIKE '%{0}%' OR Descripcion LIKE '%{0}%')", texto);
             }
 
-            if (categoria != "Todas las Categorías")
+            if (!string.IsNullOrEmpty(categoria) && categoria != "Todas las Categorías")
             {
                 if (!string.IsNullOrEmpty(filtro)) filtro += " AND ";
-                filtro += string.Format("Categoria = '{0}'", categoria);
+                filtro += string.Format("Categoria = '{0}'", categoria.Replace("'", "''"));
             }
 
             _dtServicios.DefaultView.RowFilter = filtro;
@@ -157,6 +160,12 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 return;
             }
 
+            if (cboCategoria.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccione una categoría.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             decimal precio = 0;
             if (!decimal.TryParse(txtPrecioBase.Text, out precio) || precio < 0)
             {
@@ -165,36 +174,31 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
                 return;
             }
 
-            if (_idServicioSeleccionado == 0)
+            try
             {
-                int nuevoId = _dtServicios.Rows.Count + 1;
-                _dtServicios.Rows.Add(
-                    nuevoId,
-                    cboCategoria.SelectedItem.ToString(),
-                    txtNombreServicio.Text.Trim(),
-                    txtDescripcion.Text.Trim(),
+                bool esNuevo = (_idServicioSeleccionado == 0);
+                int idCat = Convert.ToInt32(cboCategoria.SelectedValue);
+
+                _servicioBLL.GuardarServicio(
+                    _idServicioSeleccionado,
+                    idCat,
+                    txtNombreServicio.Text,
+                    txtDescripcion.Text,
                     precio,
                     chkServicioActivo.Checked);
 
-                MessageBox.Show("Servicio agregado al catálogo correctamente.", "Servicio Registrado", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LimpiarFormulario();
-            }
-            else
-            {
-                foreach (DataRow fila in _dtServicios.Rows)
-                {
-                    if (Convert.ToInt32(fila["IdServicio"]) == _idServicioSeleccionado)
-                    {
-                        fila["Categoria"] = cboCategoria.SelectedItem.ToString();
-                        fila["Nombre"] = txtNombreServicio.Text.Trim();
-                        fila["Descripcion"] = txtDescripcion.Text.Trim();
-                        fila["PrecioBase"] = precio;
-                        fila["Activo"] = chkServicioActivo.Checked;
-                        break;
-                    }
-                }
+                CargarServicios();
+                if (esNuevo) LimpiarFormulario();
 
-                MessageBox.Show("Datos del servicio actualizados correctamente.", "Servicio Actualizado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    esNuevo ? "Servicio agregado al catálogo correctamente." : "Datos del servicio actualizados correctamente.",
+                    esNuevo ? "Servicio Registrado" : "Servicio Actualizado",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar servicio: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

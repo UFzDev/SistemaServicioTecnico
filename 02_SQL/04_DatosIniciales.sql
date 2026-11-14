@@ -524,3 +524,22 @@ BEGIN
     (N'DIAS_GARANTIA_DEFAULT', N'30', N'Días naturales de garantía en reparaciones');
 END
 GO
+
+-- 20. Movimientos Iniciales de Inventario (Kardex)
+IF NOT EXISTS (SELECT 1 FROM dbo.MovimientoInventario)
+BEGIN
+    INSERT INTO dbo.MovimientoInventario (IdRefaccion, IdCompra, IdVentaRefaccion, IdOrdenServicio, IdUsuario, TipoMovimiento, Cantidad, Motivo, FechaMovimiento) VALUES
+    (1, 1, NULL, NULL, 1, N'Entrada', 10, N'Compra a proveedor COM-2026-0001', '2026-01-20 10:00'),
+    (2, 1, NULL, NULL, 1, N'Entrada', 5, N'Compra a proveedor COM-2026-0001', '2026-01-20 10:00'),
+    (4, 1, NULL, NULL, 1, N'Entrada', 10, N'Compra a proveedor COM-2026-0001', '2026-01-20 10:00'),
+    (10, 2, NULL, NULL, 1, N'Entrada', 20, N'Compra a proveedor COM-2026-0002', '2026-02-01 11:30'),
+    (10, NULL, NULL, 1, 5, N'Salida', -1, N'Consumo en orden ORD-2026-0001', '2026-02-03 11:00'),
+    (1, NULL, 1, NULL, 3, N'Salida', -1, N'Venta mostrador VTA-2026-0001', '2026-02-04 11:00'),
+    (1, NULL, NULL, 2, 6, N'Salida', -1, N'Consumo en orden ORD-2026-0002', '2026-02-06 15:00'),
+    (4, NULL, 2, NULL, 3, N'Salida', -1, N'Venta mostrador VTA-2026-0002', '2026-02-08 12:30'),
+    (7, 3, NULL, NULL, 2, N'Entrada', 5, N'Compra a proveedor COM-2026-0003', '2026-02-15 14:00'),
+    (7, NULL, NULL, NULL, 1, N'Ajuste', -1, N'Merma por revisión de control de calidad', '2026-02-18 09:30'),
+    (9, 4, NULL, NULL, 1, N'Entrada', 4, N'Compra a proveedor COM-2026-0004', '2026-03-01 09:30'),
+    (4, NULL, NULL, 12, 5, N'Salida', -1, N'Consumo en orden ORD-2026-0012', '2026-03-26 14:00');
+END
+GO

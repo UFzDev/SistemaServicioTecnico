@@ -38,7 +38,7 @@ namespace SistemaServicioTecnico.BLL
             return _ordenDAL.ObtenerSiguienteFolio();
         }
 
-        public int RegistrarOrden(string folio, int idCliente, int idEquipo, int idUsuario, string falla, string diagnostico, decimal presupuesto, DateTime fechaPrometida)
+        public int RegistrarOrden(string folio, int idCliente, int idEquipo, int idUsuario, string falla, string diagnostico, decimal presupuesto, DateTime fechaPrometida, int idServicio = 0)
         {
             if (idCliente <= 0)
                 throw new ArgumentException("Debe seleccionar un cliente.");
@@ -62,7 +62,8 @@ namespace SistemaServicioTecnico.BLL
                 falla.Trim(),
                 diagnostico != null ? diagnostico.Trim() : null,
                 presupuesto,
-                fechaPrometidaValida);
+                fechaPrometidaValida,
+                idServicio);
         }
 
         public void ActualizarOrden(int idOrdenServicio, int idNuevoEstado, int idUsuario, string falla, string diagnostico, decimal presupuesto, DateTime fechaPrometida)

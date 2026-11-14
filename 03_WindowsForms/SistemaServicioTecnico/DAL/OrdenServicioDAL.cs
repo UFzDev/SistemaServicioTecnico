@@ -96,7 +96,7 @@ namespace SistemaServicioTecnico.DAL
             }
         }
 
-        public int RegistrarOrden(string folio, int idCliente, int idEquipo, int idUsuario, string falla, string diagnostico, decimal presupuesto, DateTime fechaPrometida)
+        public int RegistrarOrden(string folio, int idCliente, int idEquipo, int idUsuario, string falla, string diagnostico, decimal presupuesto, DateTime fechaPrometida, int idServicio = 0)
         {
             int idOrdenGenerada = 0;
             using (SqlConnection con = ConexionBD.CrearConexion())
@@ -130,6 +130,23 @@ namespace SistemaServicioTecnico.DAL
                         cmdDiag.Parameters.AddWithValue("@Diag", diagnostico);
                         cmdDiag.Parameters.AddWithValue("@Id", idOrdenGenerada);
                         cmdDiag.ExecuteNonQuery();
+                    }
+                }
+
+                if (idOrdenGenerada > 0 && idServicio > 0)
+                {
+                    const string sqlDet = @"
+                        INSERT INTO dbo.DetalleOrdenServicio (IdOrdenServicio, IdServicio, DescripcionTrabajo, Cantidad, PrecioUnitario, EstadoActividad, Obligatoria)
+                        SELECT @IdOrden, s.IdServicio, s.Nombre, 1, CASE WHEN @Presupuesto > 0 THEN @Presupuesto ELSE s.PrecioBase END, N'Pendiente', 1
+                        FROM dbo.Servicio s
+                        WHERE s.IdServicio = @IdServicio;";
+
+                    using (SqlCommand cmdDet = new SqlCommand(sqlDet, con))
+                    {
+                        cmdDet.Parameters.AddWithValue("@IdOrden", idOrdenGenerada);
+                        cmdDet.Parameters.AddWithValue("@IdServicio", idServicio);
+                        cmdDet.Parameters.AddWithValue("@Presupuesto", presupuesto);
+                        cmdDet.ExecuteNonQuery();
                     }
                 }
             }

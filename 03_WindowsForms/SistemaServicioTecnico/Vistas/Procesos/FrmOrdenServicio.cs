@@ -212,6 +212,9 @@ namespace SistemaServicioTecnico.Vistas.Procesos
                 string nuevoFolio = _ordenBLL.ObtenerSiguienteFolio();
                 int idCliente = Convert.ToInt32(cboCliente.SelectedValue);
                 int idEquipo = Convert.ToInt32(cboEquipo.SelectedValue);
+                int idServicio = (cboServicioRapido.SelectedValue != null && !(cboServicioRapido.SelectedValue is DataRowView))
+                    ? Convert.ToInt32(cboServicioRapido.SelectedValue)
+                    : 0;
 
                 _ordenBLL.RegistrarOrden(
                     nuevoFolio,
@@ -221,7 +224,8 @@ namespace SistemaServicioTecnico.Vistas.Procesos
                     txtFallaReportada.Text,
                     txtDiagnostico.Text,
                     presupuesto,
-                    dtpFechaPrometida.Value);
+                    dtpFechaPrometida.Value,
+                    idServicio);
 
                 CargarOrdenes();
                 PrepararNuevaOrden();

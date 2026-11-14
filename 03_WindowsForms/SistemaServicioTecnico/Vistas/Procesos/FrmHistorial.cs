@@ -66,7 +66,7 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             if (dgvHistorial.Columns["IdOrdenServicio"] != null)
                 dgvHistorial.Columns["IdOrdenServicio"].Visible = false;
 
-            string[] colsMoneda = { "TotalServicios", "TotalRefacciones", "Total", "Pagado", "Saldo" };
+            string[] colsMoneda = { "TotalServicios", "TotalRefacciones", "Total", "Pagado", "Saldo", "TotalCalculado", "SaldoPendiente" };
             foreach (string col in colsMoneda)
             {
                 if (dgvHistorial.Columns[col] != null)
@@ -84,10 +84,13 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             string filtro = "";
             if (!string.IsNullOrEmpty(texto))
             {
-                filtro = string.Format("(Folio LIKE '%{0}%' OR Cliente LIKE '%{0}%' OR NumeroSerie LIKE '%{0}%' OR Dispositivo LIKE '%{0}%')", texto);
+                if (_dtHistorial.Columns.Contains("Cliente"))
+                    filtro = string.Format("(Folio LIKE '%{0}%' OR Cliente LIKE '%{0}%' OR NumeroSerie LIKE '%{0}%' OR Dispositivo LIKE '%{0}%')", texto);
+                else
+                    filtro = string.Format("(Folio LIKE '%{0}%' OR NumeroSerie LIKE '%{0}%' OR Dispositivo LIKE '%{0}%')", texto);
             }
 
-            if (!string.IsNullOrEmpty(estado) && estado != "Todos")
+            if (!string.IsNullOrEmpty(estado) && estado != "Todos" && _dtHistorial.Columns.Contains("EstadoOrden"))
             {
                 if (!string.IsNullOrEmpty(filtro)) filtro += " AND ";
                 filtro += string.Format("EstadoOrden = '{0}'", estado.Replace("'", "''"));
@@ -106,6 +109,7 @@ namespace SistemaServicioTecnico.Vistas.Procesos
             {
                 lblClasificacion.Text = "Nivel: -";
                 CargarHistorialGeneral();
+                Filtros_Changed(null, EventArgs.Empty);
             }
             else
             {
@@ -113,7 +117,10 @@ namespace SistemaServicioTecnico.Vistas.Procesos
                 {
                     lblClasificacion.Text = "Nivel: " + _tallerBLL.ObtenerClasificacionCliente(idCliente);
                     DataTable dtCli = _tallerBLL.ObtenerHistorialPorCliente(idCliente);
-                    dgvHistorial.DataSource = dtCli;
+                    _dtHistorial = dtCli;
+                    dgvHistorial.DataSource = _dtHistorial;
+                    FormatearColumnas();
+                    Filtros_Changed(null, EventArgs.Empty);
                 }
                 catch (Exception ex)
                 {

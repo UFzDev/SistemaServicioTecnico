@@ -12,6 +12,27 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
         public FrmLogin()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
+            ClientSize = new System.Drawing.Size(420, 350);
+            Text = "Acceso al sistema";
+            lblTitulo.Text = "Bienvenido a al sistema";
+            lblTitulo.Font = new System.Drawing.Font("Segoe UI", 21F, System.Drawing.FontStyle.Bold);
+            lblTitulo.Location = new System.Drawing.Point(36, 32);
+            var subtitulo = new Label { Text = "Gestiona tu taller desde un solo lugar.", AutoSize = true,
+                Location = new System.Drawing.Point(39, 77), ForeColor = System.Drawing.Color.SlateGray };
+            Controls.Add(subtitulo);
+            lblUsuario.Location = new System.Drawing.Point(39, 119);
+            txtUsuario.SetBounds(39, 143, 350, 28);
+            lblContrasena.Location = new System.Drawing.Point(39, 192);
+            txtContrasena.SetBounds(39, 216, 350, 28);
+            txtContrasena.UseSystemPasswordChar = true;
+            btnIngresar.SetBounds(39, 281, 230, 42);
+            btnIngresar.Text = "Iniciar sesión";
+            btnSalir.SetBounds(281, 281, 108, 42);
+            txtUsuario.TabIndex = 0;
+            txtContrasena.TabIndex = 1;
+            btnIngresar.TabIndex = 2;
+            btnSalir.TabIndex = 3;
         }
 
         private void btnIngresar_Click(object sender, EventArgs e)

@@ -400,7 +400,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblLogo.Name = "lblLogo";
             this.lblLogo.Size = new System.Drawing.Size(182, 25);
             this.lblLogo.TabIndex = 0;
-            this.lblLogo.Text = "🔧 Servicio Técnico";
+            this.lblLogo.Text = "Servicio Tecnico";
             // 
             // pnlHeader
             // 
@@ -470,7 +470,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblBienvenida.Name = "lblBienvenida";
             this.lblBienvenida.Size = new System.Drawing.Size(437, 30);
             this.lblBienvenida.TabIndex = 0;
-            this.lblBienvenida.Text = "¡Bienvenido al Sistema de Servicio Técnico!";
+            this.lblBienvenida.Text = "¡Bienvenido al Sistema!";
             // 
             // lblSubtituloBienvenida
             // 
@@ -623,7 +623,7 @@ namespace SistemaServicioTecnico.Vistas
             this.MinimumSize = new System.Drawing.Size(1000, 600);
             this.Name = "FrmMenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Sistema de Gestión de Servicio Técnico - FixPro";
+            this.Text = "Servicio Tecnico";
             this.pnlSidebar.ResumeLayout(false);
             this.pnlLogo.ResumeLayout(false);
             this.pnlLogo.PerformLayout();

@@ -15,6 +15,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         public FrmClientes()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmClientes_Load(object sender, EventArgs e)

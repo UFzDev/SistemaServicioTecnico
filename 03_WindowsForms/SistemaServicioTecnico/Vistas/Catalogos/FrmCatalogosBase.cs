@@ -8,6 +8,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         public FrmCatalogosBase()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmCatalogosBase_Load(object sender, EventArgs e)

@@ -14,6 +14,7 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
         public FrmUsuarios()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmUsuarios_Load(object sender, EventArgs e)

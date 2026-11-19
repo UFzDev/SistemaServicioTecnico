@@ -28,7 +28,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
             this.tabCatalogos.Location = new System.Drawing.Point(0, 0);
             this.tabCatalogos.Name = "tabCatalogos";
             this.tabCatalogos.SelectedIndex = 0;
-            this.tabCatalogos.Size = new System.Drawing.Size(860, 560);
+            this.tabCatalogos.Size = new System.Drawing.Size(880, 560);
 
             this.tpTiposEquipo.BackColor = System.Drawing.Color.FromArgb(241, 245, 249);
             this.tpTiposEquipo.Text = "Tipos de Equipo";

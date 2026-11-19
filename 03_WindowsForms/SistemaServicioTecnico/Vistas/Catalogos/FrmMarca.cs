@@ -14,6 +14,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         public FrmMarca()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmMarca_Load(object sender, EventArgs e)

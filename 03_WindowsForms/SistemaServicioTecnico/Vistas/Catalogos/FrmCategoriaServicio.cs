@@ -14,6 +14,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         public FrmCategoriaServicio()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmCategoriaServicio_Load(object sender, EventArgs e)

@@ -14,6 +14,7 @@ namespace SistemaServicioTecnico.Vistas.Procesos
         public FrmHistorial()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmHistorial_Load(object sender, EventArgs e)

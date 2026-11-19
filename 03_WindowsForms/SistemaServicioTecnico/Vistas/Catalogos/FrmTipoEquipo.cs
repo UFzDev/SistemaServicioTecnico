@@ -14,6 +14,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         public FrmTipoEquipo()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmTipoEquipo_Load(object sender, EventArgs e)

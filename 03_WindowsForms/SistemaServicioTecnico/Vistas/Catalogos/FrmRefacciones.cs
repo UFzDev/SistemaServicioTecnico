@@ -20,6 +20,7 @@ namespace SistemaServicioTecnico.Vistas.Catalogos
         {
             _idUsuarioActual = idUsuarioActual;
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmRefacciones_Load(object sender, EventArgs e)

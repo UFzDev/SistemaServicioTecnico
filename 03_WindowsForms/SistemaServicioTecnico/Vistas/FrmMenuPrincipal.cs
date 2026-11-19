@@ -13,7 +13,7 @@ namespace SistemaServicioTecnico.Vistas
     public partial class FrmMenuPrincipal : Form
     {
         private readonly UsuarioSesion _usuarioSesion;
-        private readonly DashboardBLL _dashboardBLL = new DashboardBLL();
+        private DashboardInicio _dashboardInicio;
         private Form _formularioActivo = null;
         private Button _botonSeleccionado = null;
 
@@ -25,9 +25,67 @@ namespace SistemaServicioTecnico.Vistas
         {
             _usuarioSesion = usuarioSesion;
             InitializeComponent();
+            PrepararInterfaz();
             ConfigurarSesion();
+            CrearMenuDesplegable();
             CargarResumenDashboard();
             SeleccionarBoton(btnDashboard);
+        }
+
+        private void CrearMenuDesplegable()
+        {
+            var menu = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true,
+                WrapContents = false, FlowDirection = FlowDirection.TopDown,
+                BackColor = pnlSidebar.BackColor, Padding = new Padding(8) };
+            pnlSidebar.Controls.Add(menu);
+            AgregarGrupo(menu, "Taller", new[] { btnOrdenes, btnClientes, btnAjustes, btnHistorial }, true);
+            AgregarGrupo(menu, "Catálogos e inventario", new[] { btnServicios, btnRefacciones, btnCatalogos }, false);
+            AgregarGrupo(menu, "Operaciones", new[] { btnVentas, btnCompras, btnReportes }, false);
+            AgregarGrupo(menu, "Administración", new[] { btnAuditoria, btnUsuarios }, false);
+            pnlLogo.BringToFront();
+            btnCerrarSesion.BringToFront();
+            btnDashboard.BringToFront();
+            menu.BringToFront();
+        }
+
+        private bool AccesoMenu(Button boton)
+        {
+            string rol = _usuarioSesion == null ? "" : _usuarioSesion.Rol;
+            if (rol == "Tecnico" && (boton == btnCatalogos || boton == btnVentas || boton == btnCompras || boton == btnReportes || boton == btnAuditoria || boton == btnUsuarios)) return false;
+            if (rol == "Recepcionista" && (boton == btnCatalogos || boton == btnCompras || boton == btnAuditoria || boton == btnUsuarios)) return false;
+            if (rol == "Supervisor" && (boton == btnAuditoria || boton == btnUsuarios)) return false;
+            return true;
+        }
+
+        private void AgregarGrupo(FlowLayoutPanel menu, string titulo, Button[] botones, bool abierto)
+        {
+            var permitidos = Array.FindAll(botones, AccesoMenu);
+            if (permitidos.Length == 0) return;
+            var grupo = new FlowLayoutPanel { Width = 202, Height = permitidos.Length * 40,
+                FlowDirection = FlowDirection.TopDown, WrapContents = false,
+                Visible = abierto, Margin = new Padding(0) };
+            var cabecera = new Button { Text = titulo + (abierto ? "   ▾" : "   ▸"),
+                Width = 202, Height = 42, FlatStyle = FlatStyle.Flat,
+                BackColor = pnlSidebar.BackColor, ForeColor = Color.White,
+                TextAlign = ContentAlignment.MiddleLeft, Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold), Margin = new Padding(0,6,0,0) };
+            cabecera.FlatAppearance.BorderSize = 0;
+            cabecera.FlatAppearance.MouseOverBackColor = Color.FromArgb(37,64,82);
+            bool expandido = abierto;
+            cabecera.Click += (s,e) => {
+                expandido = !expandido;
+                grupo.Visible = expandido;
+                cabecera.Text = titulo + (expandido ? "   ▾" : "   ▸");
+            };
+            foreach (var boton in permitidos) {
+                boton.Dock = DockStyle.None;
+                boton.Size = new Size(202,38);
+                boton.Margin = new Padding(0,0,0,2);
+                boton.Padding = new Padding(26,0,0,0);
+                grupo.Controls.Add(boton);
+            }
+            menu.Controls.Add(cabecera);
+            menu.Controls.Add(grupo);
         }
 
         private int ObtenerIdUsuarioActual()
@@ -35,27 +93,45 @@ namespace SistemaServicioTecnico.Vistas
             return _usuarioSesion != null ? _usuarioSesion.IdUsuario : 1;
         }
 
-        private void CargarResumenDashboard()
+        private async void CargarResumenDashboard()
         {
-            try
-            {
-                int ordenesActivas;
-                int enReparacion;
-                int totalClientes;
-                int stockAlerta;
-                _dashboardBLL.ObtenerResumen(out ordenesActivas, out enReparacion, out totalClientes, out stockAlerta);
-
-                lblCard1Valor.Text = ordenesActivas.ToString();
-                lblCard2Valor.Text = enReparacion.ToString();
-                lblCard3Valor.Text = totalClientes.ToString();
-                lblCard4Valor.Text = stockAlerta.ToString();
-            }
-            catch
-            {
-                // Mantener valores actuales si falla la consulta de resumen
-            }
+            if (_dashboardInicio != null) await _dashboardInicio.ActualizarAsync();
         }
 
+        private void PrepararInterfaz()
+        {
+            Text = "Servicio Tecnico";
+            MinimumSize = new Size(1100, 720);
+            pnlSidebar.BackColor = Color.FromArgb(20, 38, 55);
+            pnlSidebar.AutoScroll = true;
+            lblLogo.Text = "Servicio Tecnico";
+            lblLogo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
+            lblLogo.Location = new Point(18, 7);
+            lblSubLogo.Location = new Point(20, 52);
+            lblSubLogo.Text = "GESTIÓN DE SERVICIO TÉCNICO";
+            lblSubLogo.Font = new Font("Segoe UI", 8F);
+            foreach (Control control in pnlSidebar.Controls)
+            {
+                var boton = control as Button;
+                if (boton == null) continue;
+                boton.BackColor = pnlSidebar.BackColor;
+                boton.FlatAppearance.MouseOverBackColor = Color.FromArgb(37, 64, 82);
+                boton.FlatAppearance.MouseDownBackColor = Estilos.TemaVisual.Primario;
+                boton.Font = new Font("Segoe UI", 10F);
+                boton.Padding = new Padding(22, 0, 0, 0);
+            }
+            lblTituloVista.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblTituloVista.Text = "Inicio / Resumen del taller";
+            lblUsuarioSesion.AutoSize = false;
+            lblUsuarioSesion.TextAlign = ContentAlignment.MiddleRight;
+            lblUsuarioSesion.Width = 330;
+            lblUsuarioSesion.Left = pnlHeader.ClientSize.Width - 350;
+            pnlContenedor.BackColor = Estilos.TemaVisual.Fondo;
+            pnlContenedor.Padding = new Padding(24);
+            while (pnlDashboardHome.Controls.Count > 0) pnlDashboardHome.Controls[0].Dispose();
+            _dashboardInicio = new DashboardInicio();
+            pnlDashboardHome.Controls.Add(_dashboardInicio);
+        }
         private void ConfigurarSesion()
         {
             if (_usuarioSesion != null)
@@ -96,14 +172,14 @@ namespace SistemaServicioTecnico.Vistas
             // Restaurar color del botón previo
             if (_botonSeleccionado != null)
             {
-                _botonSeleccionado.BackColor = Color.FromArgb(30, 41, 59);
+                _botonSeleccionado.BackColor = pnlSidebar.BackColor;
                 _botonSeleccionado.ForeColor = Color.Gainsboro;
             }
 
             _botonSeleccionado = boton;
             if (_botonSeleccionado != null)
             {
-                _botonSeleccionado.BackColor = Color.FromArgb(51, 65, 85);
+                _botonSeleccionado.BackColor = Estilos.TemaVisual.Primario;
                 _botonSeleccionado.ForeColor = Color.White;
             }
         }
@@ -114,6 +190,7 @@ namespace SistemaServicioTecnico.Vistas
             {
                 _formularioActivo.Close();
                 _formularioActivo.Dispose();
+                _formularioActivo = null;
             }
 
             lblTituloVista.Text = tituloVista;
@@ -140,7 +217,7 @@ namespace SistemaServicioTecnico.Vistas
         private void btnDashboard_Click(object sender, EventArgs e)
         {
             SeleccionarBoton(btnDashboard);
-            AbrirFormularioHijo(null, "Panel Principal / Resumen");
+            AbrirFormularioHijo(null, "Inicio / Resumen del taller");
         }
 
         private void btnOrdenes_Click(object sender, EventArgs e)

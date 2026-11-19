@@ -12,6 +12,7 @@ namespace SistemaServicioTecnico.Vistas.Reportes
         public FrmReportes()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmReportes_Load(object sender, EventArgs e)

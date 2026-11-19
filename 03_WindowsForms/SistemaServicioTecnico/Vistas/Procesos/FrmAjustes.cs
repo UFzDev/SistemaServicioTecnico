@@ -20,6 +20,7 @@ namespace SistemaServicioTecnico.Vistas.Procesos
         {
             _idUsuarioActual = idUsuarioActual;
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmAjustes_Load(object sender, EventArgs e)

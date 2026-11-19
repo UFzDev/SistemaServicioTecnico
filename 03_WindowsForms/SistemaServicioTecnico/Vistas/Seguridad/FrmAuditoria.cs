@@ -13,6 +13,7 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
         public FrmAuditoria()
         {
             InitializeComponent();
+            SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
         }
 
         private void FrmAuditoria_Load(object sender, EventArgs e)

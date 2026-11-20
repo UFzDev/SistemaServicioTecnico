@@ -127,3 +127,20 @@ IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'usr_admin')
 GO
 ALTER ROLE Rol_Administrador ADD MEMBER usr_admin;
 GO
+
+-- 8. Demostracion de REVOKE y comprobacion de permisos con EXECUTE AS USER / REVERT
+GRANT INSERT ON dbo.Marca TO Rol_Operador;
+GO
+REVOKE INSERT ON dbo.Marca FROM Rol_Operador;
+GO
+
+EXECUTE AS USER = 'usr_consulta';
+SELECT TOP 3 IdTipoEquipo, Nombre FROM dbo.TipoEquipo;
+BEGIN TRY
+    SELECT TOP 1 * FROM dbo.Auditoria;
+END TRY
+BEGIN CATCH
+    SELECT ERROR_NUMBER() AS ErrorPermisoConsulta, ERROR_MESSAGE() AS MensajeBloqueoConsulta;
+END CATCH;
+REVERT;
+GO

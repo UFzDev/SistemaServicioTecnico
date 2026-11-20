@@ -207,3 +207,69 @@ BEGIN CATCH
     SELECT 20 AS CasoPrueba, N'usp_Tx_FinalizarYEntregarOrden (Orden ya entregada)' AS TransaccionProbada, ERROR_NUMBER() AS CodigoError, ERROR_MESSAGE() AS MensajeError;
 END CATCH;
 GO
+
+-- 4. Pruebas adicionales de reportes por rango de fechas, cancelacion con reversa y seguridad por roles
+
+-- Prueba 21: Ejecutar usp_ReporteOrdenesPeriodo filtrando el primer semestre de 2026.
+EXEC dbo.usp_ReporteOrdenesPeriodo @FechaInicio = '2026-01-01', @FechaFin = '2026-06-30', @IdEstadoOrden = NULL;
+GO
+
+-- Prueba 22: Ejecutar cancelacion transaccional usp_Tx_CancelarOrdenServicio verificando reintegro de stock y revirtiendo al final.
+BEGIN TRANSACTION;
+    DECLARE @StockAntesCancelacion INT = (SELECT Existencia FROM dbo.Inventario WHERE IdRefaccion = 7);
+
+    EXEC dbo.usp_Tx_CancelarOrdenServicio
+        @IdOrdenServicio = 17,
+        @IdUsuario = 1,
+        @Motivo = N'Prueba transaccional de cancelación y reintegro de inventario';
+
+    DECLARE @StockDespuesCancelacion INT = (SELECT Existencia FROM dbo.Inventario WHERE IdRefaccion = 7);
+
+    SELECT
+        22 AS CasoPrueba,
+        o.Folio,
+        o.IdEstadoOrden AS EstadoCancelado,
+        @StockAntesCancelacion AS StockAntes,
+        @StockDespuesCancelacion AS StockDespuesReintegro
+    FROM dbo.OrdenServicio o
+    WHERE o.IdOrdenServicio = 17;
+ROLLBACK TRANSACTION;
+GO
+
+-- Prueba 23: Provocar ROLLBACK en usp_Tx_RegistrarVentaMostrador por stock insuficiente.
+BEGIN TRY
+    DECLARE @IdVentaErr INT;
+    EXEC dbo.usp_Tx_RegistrarVentaMostrador
+        @IdCliente = 1,
+        @IdUsuario = 3,
+        @IdRefaccion = 1,
+        @Cantidad = 99999,
+        @IdMetodoPago = 1,
+        @NuevoIdVenta = @IdVentaErr OUTPUT;
+END TRY
+BEGIN CATCH
+    SELECT 23 AS CasoPrueba, N'usp_Tx_RegistrarVentaMostrador (Sin Stock)' AS TransaccionProbada, ERROR_NUMBER() AS CodigoError, ERROR_MESSAGE() AS MensajeError;
+END CATCH;
+GO
+
+-- Prueba 24: Seguridad - Verificar que usr_consulta tiene denegado el acceso a dbo.Auditoria.
+EXECUTE AS USER = 'usr_consulta';
+BEGIN TRY
+    SELECT TOP 1 * FROM dbo.Auditoria;
+END TRY
+BEGIN CATCH
+    SELECT 24 AS CasoPrueba, N'Seguridad Rol_Consulta sobre dbo.Auditoria' AS PruebaSeguridad, ERROR_NUMBER() AS CodigoError, ERROR_MESSAGE() AS MensajeError;
+END CATCH;
+REVERT;
+GO
+
+-- Prueba 25: Seguridad - Verificar que usr_tecnico tiene denegado el acceso a dbo.Pago.
+EXECUTE AS USER = 'usr_tecnico';
+BEGIN TRY
+    SELECT TOP 1 * FROM dbo.Pago;
+END TRY
+BEGIN CATCH
+    SELECT 25 AS CasoPrueba, N'Seguridad Rol_Tecnico sobre dbo.Pago' AS PruebaSeguridad, ERROR_NUMBER() AS CodigoError, ERROR_MESSAGE() AS MensajeError;
+END CATCH;
+REVERT;
+GO

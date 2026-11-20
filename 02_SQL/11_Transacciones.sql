@@ -337,3 +337,89 @@ BEGIN
     END CATCH
 END;
 GO
+
+-- 6. Transaccion para cancelacion de orden y reintegro de refacciones al inventario
+
+-- Cancela una orden activa revirtiendo las refacciones consumidas al stock, registrando kardex e historial.
+IF OBJECT_ID('dbo.usp_Tx_CancelarOrdenServicio', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.usp_Tx_CancelarOrdenServicio;
+GO
+
+CREATE PROCEDURE dbo.usp_Tx_CancelarOrdenServicio
+    @IdOrdenServicio INT,
+    @IdUsuario INT,
+    @Motivo NVARCHAR(400) = N'Cancelación de orden de servicio'
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        DECLARE @EstadoActual INT;
+        SELECT @EstadoActual = IdEstadoOrden
+        FROM dbo.OrdenServicio
+        WHERE IdOrdenServicio = @IdOrdenServicio;
+
+        IF @EstadoActual IS NULL
+            THROW 50050, N'La orden de servicio especificada no existe.', 1;
+
+        IF @EstadoActual = 8
+            THROW 50051, N'No se puede cancelar una orden que ya fue entregada.', 1;
+
+        IF @EstadoActual = 9
+            THROW 50052, N'La orden de servicio ya se encuentra cancelada.', 1;
+
+        IF EXISTS (SELECT 1 FROM dbo.OrdenRefaccion WHERE IdOrdenServicio = @IdOrdenServicio)
+        BEGIN
+            UPDATE inv
+            SET inv.Existencia = inv.Existencia + orf.CantidadReintegrada,
+                inv.FechaActualizacion = SYSDATETIME()
+            FROM dbo.Inventario inv
+            INNER JOIN (
+                SELECT IdRefaccion, SUM(Cantidad) AS CantidadReintegrada
+                FROM dbo.OrdenRefaccion
+                WHERE IdOrdenServicio = @IdOrdenServicio
+                GROUP BY IdRefaccion
+            ) orf ON inv.IdRefaccion = orf.IdRefaccion;
+
+            INSERT INTO dbo.MovimientoInventario (
+                IdRefaccion, IdCompra, IdVentaRefaccion, IdOrdenServicio, IdUsuario,
+                TipoMovimiento, Cantidad, Motivo, FechaMovimiento
+            )
+            SELECT
+                orf.IdRefaccion,
+                NULL,
+                NULL,
+                @IdOrdenServicio,
+                @IdUsuario,
+                N'Entrada',
+                SUM(orf.Cantidad),
+                N'Reingreso por cancelación de orden #' + CAST(@IdOrdenServicio AS NVARCHAR(20)),
+                SYSDATETIME()
+            FROM dbo.OrdenRefaccion orf
+            WHERE orf.IdOrdenServicio = @IdOrdenServicio
+            GROUP BY orf.IdRefaccion;
+        END
+
+        INSERT INTO dbo.HistorialEstadoOrden (
+            IdOrdenServicio, IdEstadoAnterior, IdEstadoNuevo, IdUsuario, FechaCambio, Motivo
+        )
+        VALUES (
+            @IdOrdenServicio, @EstadoActual, 9, @IdUsuario, SYSDATETIME(), ISNULL(@Motivo, N'Cancelación de orden de servicio')
+        );
+
+        UPDATE dbo.OrdenServicio
+        SET IdEstadoOrden = 9
+        WHERE IdOrdenServicio = @IdOrdenServicio;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO

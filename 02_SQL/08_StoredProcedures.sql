@@ -527,3 +527,37 @@ BEGIN
     ORDER BY p.FechaPago DESC;
 END;
 GO
+
+-- Reporte de ordenes de servicio por rango de fechas con estado opcional, costo calculado y saldo pendiente.
+IF OBJECT_ID('dbo.usp_ReporteOrdenesPeriodo', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.usp_ReporteOrdenesPeriodo;
+GO
+
+CREATE PROCEDURE dbo.usp_ReporteOrdenesPeriodo
+    @FechaInicio DATETIME2(0) = '2020-01-01',
+    @FechaFin DATETIME2(0) = '2099-12-31',
+    @IdEstadoOrden INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        o.IdOrdenServicio,
+        o.Folio,
+        LTRIM(RTRIM(c.Nombre + N' ' + ISNULL(c.Apellidos, N''))) AS Cliente,
+        m.Nombre + N' ' + eq.Modelo AS Dispositivo,
+        eo.Nombre AS Estado,
+        o.FechaRecepcion,
+        o.FechaPrometida,
+        dbo.fn_CostoTotalOrden(o.IdOrdenServicio) AS CostoTotal,
+        dbo.fn_SaldoPendienteOrden(o.IdOrdenServicio) AS SaldoPendiente
+    FROM dbo.OrdenServicio o
+    INNER JOIN dbo.Cliente c ON o.IdCliente = c.IdCliente
+    INNER JOIN dbo.Equipo eq ON o.IdEquipo = eq.IdEquipo
+    INNER JOIN dbo.Marca m ON eq.IdMarca = m.IdMarca
+    INNER JOIN dbo.EstadoOrden eo ON o.IdEstadoOrden = eo.IdEstadoOrden
+    WHERE o.FechaRecepcion BETWEEN @FechaInicio AND @FechaFin
+      AND (@IdEstadoOrden IS NULL OR o.IdEstadoOrden = @IdEstadoOrden)
+    ORDER BY o.FechaRecepcion DESC, o.IdOrdenServicio DESC;
+END;
+GO

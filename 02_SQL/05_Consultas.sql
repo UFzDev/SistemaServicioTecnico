@@ -259,6 +259,18 @@ LEFT JOIN dbo.OrdenServicio o ON eq.IdEquipo = o.IdEquipo
 WHERE o.IdOrdenServicio IS NULL;
 GO
 
+SELECT 
+    r.IdRefaccion,
+    r.SKU,
+    r.Nombre AS Refaccion,
+    r.PrecioVenta,
+    COUNT(dv.IdDetalleVenta) AS VentasMostrador
+FROM dbo.Refaccion r
+LEFT JOIN dbo.DetalleVenta dv ON r.IdRefaccion = dv.IdRefaccion
+GROUP BY r.IdRefaccion, r.SKU, r.Nombre, r.PrecioVenta
+HAVING COUNT(dv.IdDetalleVenta) = 0;
+GO
+
 -- 9. Consultas con 5 o mas tablas
 SELECT 
     o.Folio,
@@ -300,12 +312,26 @@ FROM dbo.Refaccion
 WHERE PrecioVenta > (SELECT AVG(PrecioVenta) FROM dbo.Refaccion);
 GO
 
+SELECT IdCliente, Nombre + ' ' + Apellidos AS Cliente, Telefono
+FROM dbo.Cliente
+WHERE IdCliente IN (SELECT DISTINCT IdCliente FROM dbo.VentaRefaccion WHERE Estado = N'Confirmada');
+GO
+
 SELECT c.IdCliente, c.Nombre + ' ' + c.Apellidos AS Cliente
 FROM dbo.Cliente c
 WHERE EXISTS (
     SELECT 1 
     FROM dbo.OrdenServicio o 
     WHERE o.IdCliente = c.IdCliente AND o.IdEstadoOrden = 8
+);
+GO
+
+SELECT r.SKU, r.Nombre, r.PrecioVenta, r.IdCategoriaRefaccion
+FROM dbo.Refaccion r
+WHERE r.PrecioVenta > (
+    SELECT AVG(r2.PrecioVenta)
+    FROM dbo.Refaccion r2
+    WHERE r2.IdCategoriaRefaccion = r.IdCategoriaRefaccion
 );
 GO
 
@@ -317,6 +343,14 @@ UNION
 SELECT Nombre + ' ' + Apellidos AS Persona, Telefono, 'Empleado' AS Tipo
 FROM dbo.Empleado
 WHERE Telefono IS NOT NULL;
+GO
+
+SELECT Folio, N'Orden de Servicio' AS Origen, FechaRecepcion AS FechaOperacion
+FROM dbo.OrdenServicio
+UNION ALL
+SELECT Folio, N'Venta Mostrador' AS Origen, FechaVenta AS FechaOperacion
+FROM dbo.VentaRefaccion
+ORDER BY FechaOperacion DESC;
 GO
 
 SELECT IdCliente FROM dbo.OrdenServicio

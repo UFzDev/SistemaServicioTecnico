@@ -21,6 +21,14 @@ namespace SistemaServicioTecnico.BLL
             return _dal.ObtenerReporteIngresosPeriodo(fechaInicio, fechaFin);
         }
 
+        public DataTable ObtenerReporteOrdenesPeriodo(DateTime fechaInicio, DateTime fechaFin)
+        {
+            if (fechaFin < fechaInicio)
+                throw new ArgumentException("La fecha final no puede ser menor a la fecha inicial.");
+
+            return _dal.ObtenerReporteOrdenesPeriodo(fechaInicio, fechaFin);
+        }
+
         public DataTable ObtenerTopServicios()
         {
             return _dal.ObtenerTopServicios();

@@ -23,7 +23,8 @@ namespace SistemaServicioTecnico.Vistas.Reportes
                 "3. Top Servicios Más Solicitados",
                 "4. Rendimiento de Técnicos",
                 "5. Semáforo de Stock e Inventario",
-                "6. Expediente Histórico de Clientes"
+                "6. Expediente Histórico de Clientes",
+                "7. Órdenes y Saldos por Período"
             });
             dtpFechaInicio.Value = new DateTime(DateTime.Now.Year, 1, 1);
             dtpFechaFin.Value = DateTime.Now;
@@ -33,7 +34,7 @@ namespace SistemaServicioTecnico.Vistas.Reportes
 
         private void cboReporte_SelectedIndexChanged(object sender, EventArgs e)
         {
-            bool usaFechas = (cboReporte.SelectedIndex == 1);
+            bool usaFechas = (cboReporte.SelectedIndex == 1 || cboReporte.SelectedIndex == 6);
             dtpFechaInicio.Enabled = usaFechas;
             dtpFechaFin.Enabled = usaFechas;
         }
@@ -65,8 +66,11 @@ namespace SistemaServicioTecnico.Vistas.Reportes
                     case 4:
                         dt = _bll.ObtenerStockAlerta();
                         break;
-                    default:
+                    case 5:
                         dt = _bll.ObtenerExpedienteClientes();
+                        break;
+                    default:
+                        dt = _bll.ObtenerReporteOrdenesPeriodo(dtpFechaInicio.Value, dtpFechaFin.Value);
                         break;
                 }
 
@@ -85,7 +89,8 @@ namespace SistemaServicioTecnico.Vistas.Reportes
             string[] colsMoneda = {
                 "IngresosServiciosTaller", "IngresosVentasMostrador", "IngresoTotal",
                 "Importe", "PrecioBase", "TotalRecaudado", "MontoTotalPresupuestado",
-                "CostoReferencia", "PrecioVenta", "ValorInventario", "TotalPagadoHistorico"
+                "CostoReferencia", "PrecioVenta", "ValorInventario", "TotalPagadoHistorico",
+                "CostoTotal", "SaldoPendiente"
             };
 
             foreach (string col in colsMoneda)

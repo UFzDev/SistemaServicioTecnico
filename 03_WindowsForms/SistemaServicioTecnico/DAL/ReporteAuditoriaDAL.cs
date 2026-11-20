@@ -49,6 +49,27 @@ namespace SistemaServicioTecnico.DAL
             return dt;
         }
 
+        public DataTable ObtenerReporteOrdenesPeriodo(DateTime fechaInicio, DateTime fechaFin)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection con = ConexionBD.CrearConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("dbo.usp_ReporteOrdenesPeriodo", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio.Date);
+                    cmd.Parameters.AddWithValue("@FechaFin", fechaFin.Date.AddDays(1).AddSeconds(-1));
+                    cmd.Parameters.AddWithValue("@IdEstadoOrden", DBNull.Value);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
+
         public DataTable ObtenerTopServicios()
         {
             return EjecutarConsulta(

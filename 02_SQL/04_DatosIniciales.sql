@@ -67,7 +67,9 @@ BEGIN
     (N'Recuperación de Información', 1),
     (N'Microsoldadura y Placa Base', 1),
     (N'Limpieza y Cambio de Pasta Térmica', 1),
-    (N'Configuración de Redes y Servidores', 1);
+    (N'Configuración de Redes y Servidores', 1),
+    (N'Actualización de Hardware', 1),
+    (N'Reparación de Pantallas y Bisagras', 1);
 END
 GO
 
@@ -92,7 +94,9 @@ BEGIN
     (N'Teclados y Touchpads', 1),
     (N'Fuentes de Poder', 1),
     (N'Ventiladores y Disipadores', 1),
-    (N'Pastas Térmicas e Insumos', 1);
+    (N'Pastas Térmicas e Insumos', 1),
+    (N'Cables y Adaptadores', 1),
+    (N'Carcasas y Bisagras', 1);
 END
 GO
 
@@ -238,7 +242,7 @@ BEGIN
 END
 GO
 
--- 8. Servicios (10 servicios de catálogo)
+-- 8. Servicios (15 servicios de catálogo)
 IF NOT EXISTS (SELECT 1 FROM dbo.Servicio)
 BEGIN
     INSERT INTO dbo.Servicio (IdCategoriaServicio, Nombre, Descripcion, PrecioBase, Activo) VALUES
@@ -251,11 +255,16 @@ BEGIN
     (5, N'Recuperación de Información en Disco Dañado', N'Extracción lógica de archivos en HDD o memorias USB', 800.00, 1),
     (6, N'Reparación de Centro de Carga Laptop', N'Desoldadura y reemplazo de conector Jack DC', 550.00, 1),
     (7, N'Limpieza Química y Mantenimiento de Impresora', N'Destapado de cabezales y purgado de mangueras de tinta', 450.00, 1),
-    (8, N'Configuración de Red Local y Servidor de Archivos', N'Instalación de almacenamiento NAS y compartición segura', 950.00, 1);
+    (8, N'Configuración de Red Local y Servidor de Archivos', N'Instalación de almacenamiento NAS y compartición segura', 950.00, 1),
+    (9, N'Ampliación y Clonación a Disco SSD NVMe', N'Migración de sistema operativo sin pérdida de archivos', 450.00, 1),
+    (9, N'Instalación y Configuración de Memoria RAM', N'Prueba de compatibilidad y verificación dual channel', 200.00, 1),
+    (10, N'Reconstrucción Estructural de Bisagras', N'Refuerzo con resina epóxica y ajuste de tensión', 650.00, 1),
+    (3, N'Pruebas de Estrés Térmico y Fuente', N'Monitoreo de voltajes y temperaturas bajo carga', 250.00, 1),
+    (6, N'Reballing de Chip Gráfico Legacy', N'Servicio descontinuado para placas antiguas', 1500.00, 0);
 END
 GO
 
--- 9. Refacciones e Inventario (10 refacciones con existencias reales)
+-- 9. Refacciones e Inventario (15 refacciones con existencias reales)
 IF NOT EXISTS (SELECT 1 FROM dbo.Refaccion)
 BEGIN
     INSERT INTO dbo.Refaccion (IdCategoriaRefaccion, SKU, Nombre, Descripcion, CostoReferencia, PrecioVenta, StockMinimo, Activo) VALUES
@@ -268,7 +277,12 @@ BEGIN
     (3, N'DISP-LED-156', N'Pantalla Display LED 15.6 Slim 30 Pines FHD', N'Panel de repuesto genérico compatible con HP/Dell/Lenovo', 1100.00, 1750.00, 2, 1),
     (4, N'BAT-DELL-INSP', N'Batería Original Dell Inspiron 42Wh 3 Celdas', N'Batería interna de ion de litio', 650.00, 1100.00, 2, 1),
     (6, N'FUENTE-EVGA-600', N'Fuente de Poder EVGA 600W 80 Plus White', N'Fuente certificada para PC gamer y ensambles', 720.00, 1150.00, 2, 1),
-    (8, N'PASTA-ARTIC-MX4', N'Pasta Térmica Arctic MX-4 4g', N'Pasta de alto rendimiento micropartículas de carbono', 120.00, 220.00, 6, 1);
+    (8, N'PASTA-ARTIC-MX4', N'Pasta Térmica Arctic MX-4 4g', N'Pasta de alto rendimiento micropartículas de carbono', 120.00, 220.00, 6, 1),
+    (1, N'SSD-WD-1TB', N'SSD WD Blue SN580 1TB NVMe M.2', N'Unidad de almacenamiento NVMe alto desempeño', 900.00, 1450.00, 3, 1),
+    (5, N'TECL-HP-PAV15', N'Teclado Retroiluminado HP Pavilion 15 Español', N'Repuesto original con marco superior', 450.00, 780.00, 2, 1),
+    (7, N'VENT-COOL-120', N'Ventilador Cooler Master 120mm PWM', N'Ventilador silencioso para gabinete ATX', 180.00, 340.00, 4, 1),
+    (9, N'CABLE-HDMI-2M', N'Cable HDMI 2.1 Alta Velocidad 2m', N'Cable mallado para monitores 4K (sin salidas demo)', 110.00, 210.00, 5, 1),
+    (10, N'TAPA-LAP-GEN', N'Cubierta Superior Genérica 14 Pulgadas', N'Artículo descontinuado sin stock para pruebas inactivas', 300.00, 550.00, 1, 0);
 
     INSERT INTO dbo.Inventario (IdRefaccion, Existencia, FechaActualizacion)
     VALUES
@@ -281,7 +295,12 @@ BEGIN
     (7, 4, SYSDATETIME()),
     (8, 5, SYSDATETIME()),
     (9, 4, SYSDATETIME()),
-    (10, 25, SYSDATETIME());
+    (10, 25, SYSDATETIME()),
+    (11, 9, SYSDATETIME()),
+    (12, 5, SYSDATETIME()),
+    (13, 10, SYSDATETIME()),
+    (14, 20, SYSDATETIME()),
+    (15, 0, SYSDATETIME());
 END
 GO
 
@@ -364,11 +383,36 @@ BEGIN
     (20, 3, N'Reconstrucción de bisagras con resina epóxica', 1, 450.00, N'Pendiente', 1, NULL),
     (21, 4, N'Diagnóstico eléctrico de componentes', 1, 150.00, N'EnProceso', 1, NULL),
     (22, 4, N'Diagnóstico de tarjeta digitalizadora iPad', 1, 150.00, N'EnProceso', 1, NULL),
-    (23, 1, N'Mantenimiento preventivo laptop', 1, 350.00, N'Pendiente', 1, NULL);
+    (23, 1, N'Mantenimiento preventivo laptop', 1, 350.00, N'Pendiente', 1, NULL),
+    (11, 4, N'Revisión de lente óptico y pruebas de lectura', 1, 150.00, N'Completada', 0, '2026-03-22 15:00'),
+    (11, 14, N'Prueba de temperatura tras armado de consola', 1, 250.00, N'Completada', 1, '2026-03-22 18:00'),
+    (12, 12, N'Verificación dual channel y memtest86', 1, 200.00, N'Completada', 1, '2026-03-26 16:00'),
+    (12, 6, N'Optimización de inicio y servicios Windows', 1, 150.00, N'Completada', 0, '2026-03-26 17:00'),
+    (13, 1, N'Limpieza de sensores ópticos y chasis de impresora', 1, 350.00, N'Completada', 1, '2026-03-30 15:00'),
+    (13, 4, N'Prueba de impresión continua de 50 hojas', 1, 150.00, N'Completada', 0, '2026-03-30 16:00'),
+    (14, 4, N'Prueba de matriz de teclas y flexor de teclado', 1, 150.00, N'Completada', 1, '2026-04-02 10:00'),
+    (14, 1, N'Sopleteado interno de disipadores durante apertura', 1, 350.00, N'EnProceso', 0, NULL),
+    (15, 4, N'Medición de voltaje de celdas de batería', 1, 150.00, N'Completada', 1, '2026-04-04 11:00'),
+    (15, 14, N'Prueba de ciclo de carga y descargado', 1, 250.00, N'EnProceso', 1, NULL),
+    (16, 11, N'Migración de particiones GPT e inicialización UEFI', 1, 450.00, N'EnProceso', 1, NULL),
+    (16, 1, N'Limpieza básica previa al cierre de gabinete', 1, 350.00, N'Pendiente', 0, NULL),
+    (17, 4, N'Diagnóstico de flexor eDP y bisagra afectada', 1, 150.00, N'Completada', 1, '2026-04-11 10:00'),
+    (17, 13, N'Ajuste y lubricación de bisagra derecha', 1, 300.00, N'Pendiente', 0, NULL),
+    (18, 4, N'Pruebas de continuidad en línea de 19V', 1, 150.00, N'Completada', 1, '2026-04-13 09:00'),
+    (18, 14, N'Verificación térmica de cargador bajo carga', 1, 250.00, N'Pendiente', 0, NULL),
+    (19, 4, N'Inspección microscópica de zonas con sulfato', 1, 150.00, N'Completada', 1, '2026-04-16 11:00'),
+    (19, 7, N'Respaldo preventivo de información de SSD', 1, 400.00, N'Pendiente', 0, NULL),
+    (20, 13, N'Refuerzo estructural con resina en tapa LCD', 1, 650.00, N'Pendiente', 1, NULL),
+    (20, 4, N'Revisión de integridad del cable coaxial Wi-Fi', 1, 150.00, N'Completada', 0, '2026-04-19 10:00'),
+    (21, 14, N'Prueba de voltajes ATX 12V / 5V / 3.3V', 1, 250.00, N'EnProceso', 1, NULL),
+    (22, 3, N'Cotización de reemplazo de digitalizador táctil', 1, 400.00, N'Pendiente', 1, NULL),
+    (23, 14, N'Prueba térmica post-limpieza en laptop', 1, 250.00, N'Pendiente', 0, NULL),
+    (24, 1, N'Mantenimiento preventivo laptop corporativa', 1, 350.00, N'Pendiente', 1, NULL),
+    (24, 6, N'Escaneo completo y limpieza de arranque', 1, 300.00, N'Pendiente', 0, NULL);
 END
 GO
 
--- 13. Orden - Refacción (Refacciones consumidas en órdenes)
+-- 13. Orden - Refacción (15 refacciones consumidas en órdenes)
 IF NOT EXISTS (SELECT 1 FROM dbo.OrdenRefaccion)
 BEGIN
     INSERT INTO dbo.OrdenRefaccion (IdOrdenServicio, IdRefaccion, Cantidad, PrecioUnitario, FechaConsumo) VALUES
@@ -380,7 +424,13 @@ BEGIN
     (12, 4, 1, 590.00, '2026-03-26 14:00'),
     (16, 1, 1, 680.00, '2026-04-08 11:00'),
     (17, 7, 1, 1750.00, '2026-04-11 12:00'),
-    (18, 10, 1, 220.00, '2026-04-13 10:00');
+    (18, 10, 1, 220.00, '2026-04-13 10:00'),
+    (11, 10, 1, 220.00, '2026-03-22 14:00'),
+    (13, 13, 1, 340.00, '2026-03-30 12:00'),
+    (14, 12, 1, 780.00, '2026-04-02 15:00'),
+    (15, 8, 1, 1100.00, '2026-04-04 16:00'),
+    (19, 10, 1, 220.00, '2026-04-16 14:00'),
+    (20, 11, 1, 1450.00, '2026-04-19 15:00');
 END
 GO
 
@@ -426,7 +476,15 @@ BEGIN
     (2, 10, 20, 120.00),
     (3, 7, 5, 1100.00),
     (4, 9, 4, 720.00),
-    (5, 2, 5, 850.00);
+    (5, 2, 5, 850.00),
+    (1, 5, 4, 680.00),
+    (2, 3, 6, 250.00),
+    (3, 8, 4, 650.00),
+    (3, 12, 3, 450.00),
+    (4, 6, 4, 750.00),
+    (4, 13, 8, 180.00),
+    (5, 11, 5, 900.00),
+    (5, 1, 6, 420.00);
 END
 GO
 
@@ -465,7 +523,14 @@ BEGIN
     (12, 2, 1, 1300.00),
     (13, 4, 1, 590.00),
     (14, 1, 1, 680.00),
-    (15, 2, 1, 1300.00);
+    (15, 2, 1, 1300.00),
+    (11, 13, 1, 340.00),
+    (12, 10, 1, 220.00),
+    (13, 11, 1, 1450.00),
+    (14, 3, 1, 420.00),
+    (15, 5, 1, 1050.00),
+    (15, 12, 1, 780.00),
+    (15, 10, 2, 220.00);
 END
 GO
 

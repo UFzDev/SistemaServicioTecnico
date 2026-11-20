@@ -2,7 +2,7 @@
 USE master;
 GO
 
-IF DB_ID(N'SistemaServicioTecnico') IS NULL
+IF DB_ID(N'ServicioTecnicoBD') IS NULL
     CREATE DATABASE ServicioTecnicoBD;
 GO
 

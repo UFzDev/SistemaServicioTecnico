@@ -15,7 +15,7 @@ namespace SistemaServicioTecnico.Vistas.Seguridad
             SistemaServicioTecnico.Vistas.Estilos.TemaVisual.Aplicar(this);
             ClientSize = new System.Drawing.Size(420, 350);
             Text = "Acceso al sistema";
-            lblTitulo.Text = "Bienvenido a al sistema";
+            lblTitulo.Text = "Bienvenido al sistema";
             lblTitulo.Font = new System.Drawing.Font("Segoe UI", 21F, System.Drawing.FontStyle.Bold);
             lblTitulo.Location = new System.Drawing.Point(36, 32);
             var subtitulo = new Label { Text = "Gestiona tu taller desde un solo lugar.", AutoSize = true,

@@ -17,7 +17,7 @@ SELECT
 SELECT e.Nombre AS Estado, COUNT(o.IdOrdenServicio) AS Total
  FROM dbo.EstadoOrden e LEFT JOIN dbo.OrdenServicio o ON o.IdEstadoOrden=e.IdEstadoOrden
  WHERE e.EsFinal=0 GROUP BY e.IdEstadoOrden,e.Nombre ORDER BY e.IdEstadoOrden;
-SELECT TOP (8) o.Folio, c.Nombre+' '+c.Apellidos AS Cliente, e.Nombre AS Estado,
+SELECT TOP (8) o.Folio, LTRIM(RTRIM(c.Nombre + ' ' + ISNULL(c.Apellidos, ''))) AS Cliente, e.Nombre AS Estado,
  o.FechaRecepcion AS Recepcion, o.FechaPrometida AS Compromiso
  FROM dbo.OrdenServicio o JOIN dbo.Cliente c ON c.IdCliente=o.IdCliente
  JOIN dbo.EstadoOrden e ON e.IdEstadoOrden=o.IdEstadoOrden

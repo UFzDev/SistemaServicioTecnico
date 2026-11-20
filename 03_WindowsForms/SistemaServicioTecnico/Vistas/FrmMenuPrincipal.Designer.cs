@@ -400,7 +400,7 @@ namespace SistemaServicioTecnico.Vistas
             this.lblLogo.Name = "lblLogo";
             this.lblLogo.Size = new System.Drawing.Size(182, 25);
             this.lblLogo.TabIndex = 0;
-            this.lblLogo.Text = "Servicio Tecnico";
+            this.lblLogo.Text = "Servicio Técnico";
             // 
             // pnlHeader
             // 
@@ -623,7 +623,7 @@ namespace SistemaServicioTecnico.Vistas
             this.MinimumSize = new System.Drawing.Size(1000, 600);
             this.Name = "FrmMenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Servicio Tecnico";
+            this.Text = "Servicio Técnico";
             this.pnlSidebar.ResumeLayout(false);
             this.pnlLogo.ResumeLayout(false);
             this.pnlLogo.PerformLayout();

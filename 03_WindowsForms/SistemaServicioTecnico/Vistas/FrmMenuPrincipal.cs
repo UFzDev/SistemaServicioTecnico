@@ -100,11 +100,11 @@ namespace SistemaServicioTecnico.Vistas
 
         private void PrepararInterfaz()
         {
-            Text = "Servicio Tecnico";
+            Text = "Servicio Técnico";
             MinimumSize = new Size(1100, 720);
             pnlSidebar.BackColor = Color.FromArgb(20, 38, 55);
             pnlSidebar.AutoScroll = true;
-            lblLogo.Text = "Servicio Tecnico";
+            lblLogo.Text = "Servicio Técnico";
             lblLogo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
             lblLogo.Location = new Point(18, 7);
             lblSubLogo.Location = new Point(20, 52);

@@ -1,0 +1,55 @@
+Changed database context to 'ServicioTecnicoBD'.
+TotalTablas
+-----------
+30
+
+(1 rows affected)
+TotalClavesForaneas
+-------------------
+44
+
+(1 rows affected)
+TotalCheckConstraints
+---------------------
+39
+
+(1 rows affected)
+TotalUniqueConstraints
+----------------------
+20
+
+(1 rows affected)
+Tabla Columnas
+----- --------
+Auditoria 8
+CategoriaRefaccion 3
+CategoriaServicio 3
+Cliente 8
+Compra 7
+Configuracion 6
+DetalleCompra 5
+DetalleOrdenServicio 9
+DetalleVenta 5
+Empleado 8
+Equipo 9
+EstadoOrden 4
+HistorialEstadoOrden 7
+Inventario 4
+Marca 3
+MetodoPago 3
+MovimientoInventario 10
+OrdenRefaccion 6
+OrdenServicio 15
+OrdenTecnico 6
+Pago 9
+Proveedor 8
+Refaccion 9
+RefaccionProveedor 6
+Rol 4
+Servicio 6
+TipoEquipo 4
+Usuario 8
+UsuarioRol 4
+VentaRefaccion 7
+
+(30 rows affected)

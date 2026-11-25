@@ -1,0 +1,193 @@
+Changed database context to 'ServicioTecnicoBD'.
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+1 CK_Cliente_Nombre 547 The INSERT statement conflicted with the CHECK constraint "CK_Cliente_Nombre". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Cliente", column 'Nombre'.
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+2 UX_Cliente_Correo 2601 Cannot insert duplicate key row in object 'dbo.Cliente' with unique index 'UX_Cliente_Correo'. The duplicate key value is (agomez@gmail.com).
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+3 CK_Empleado_Puesto 547 The INSERT statement conflicted with the CHECK constraint "CK_Empleado_Puesto". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Empleado", column 'Puesto'.
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+4 CK_Servicio_PrecioBase 547 The INSERT statement conflicted with the CHECK constraint "CK_Servicio_PrecioBase". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Servicio", column 'PrecioBase'.
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+5 UQ_Refaccion_SKU 2627 Violation of UNIQUE KEY constraint 'UQ_Refaccion_SKU'. Cannot insert duplicate key in object 'dbo.Refaccion'. The duplicate key value is (BAT-DELL-INSP).
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+6 FK_Orden_EquipoCliente 547 The INSERT statement conflicted with the FOREIGN KEY constraint "FK_Orden_EquipoCliente". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Equipo".
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+7 CK_Orden_Fechas 547 The INSERT statement conflicted with the CHECK constraint "CK_Orden_Fechas". The conflict occurred in database "ServicioTecnicoBD", table "dbo.OrdenServicio".
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+8 CK_Pago_Destino 547 The INSERT statement conflicted with the CHECK constraint "CK_Pago_Destino". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Pago".
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+9 CK_Pago_Importe 547 The INSERT statement conflicted with the CHECK constraint "CK_Pago_Importe". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Pago", column 'Importe'.
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba RestriccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+10 CK_Inventario_Existencia 547 The UPDATE statement conflicted with the CHECK constraint "CK_Inventario_Existencia". The conflict occurred in database "ServicioTecnicoBD", table "dbo.Inventario", column 'Existencia'.
+
+(1 rows affected)
+IdUsuario NombreUsuario IdEmpleado NombreEmpleado Puesto IdRol Rol
+--------- ------------- ---------- -------------- ------ ----- ---
+1 admin 1 Uriel Flores Zárate Administrador 1 Administrador
+IdOrdenEvaluada CostoTotalOrden SaldoPendiente DiasGarantiaRestantes ClasificacionCliente1
+--------------- --------------- -------------- --------------------- ---------------------
+1 970.00 220.00 0 FRECUENTE
+
+(1 rows affected)
+IdOrdenServicio Folio Dispositivo NumeroSerie EstadoOrden FechaRecepcion FechaEntrega TotalCalculado SaldoPendiente
+--------------- ----- ----------- ----------- ----------- -------------- ------------ -------------- --------------
+1 ORD-2026-0001 HP Pavilion 15-dk0020la 5CD9321ABC Entregada 2026-02-01 09:30:00 2026-02-03 16:30:00 970.00 220.00
+21 ORD-2026-0021 Samsung Galaxy S21 Ultra R58M901XYZ En Diagnóstico 2026-04-20 10:00:00 NULL 400.00 400.00
+
+(2 rows affected)
+IdRefaccion SKU Refaccion PrecioVenta Existencia ValorInventario
+----------- --- --------- ----------- ---------- ---------------
+1 SSD-KING-480 Unidad SSD Kingston 480GB SATA 2.5 680.00 15 10200.00
+2 SSD-NVME-1TB SSD Kingston NV2 1TB PCIe 4.0 NVMe M.2 1300.00 8 10400.00
+3 SSD-ADATA-240 SSD Adata SU650 240GB SATA 2.5 420.00 12 5040.00
+
+(3 rows affected)
+IdOrdenServicio Folio Cliente EstadoActual TecnicoAsignado
+--------------- ----- ------- ------------ ---------------
+11 ORD-2026-0011 Héctor Benítez Rojo Terminada / Lista Elena Navarro Ortiz
+12 ORD-2026-0012 Fernanda Delgado Nava Terminada / Lista Jorge Martínez Castillo
+13 ORD-2026-0013 Adrián Mora Cordero Terminada / Lista Luis García Hernández
+
+(3 rows affected)
+SKU Refaccion Existencia EstadoStock
+--- --------- ---------- -----------
+SSD-KING-480 Unidad SSD Kingston 480GB SATA 2.5 15 NORMAL
+SSD-NVME-1TB SSD Kingston NV2 1TB PCIe 4.0 NVMe M.2 8 NORMAL
+SSD-ADATA-240 SSD Adata SU650 240GB SATA 2.5 12 NORMAL
+
+(3 rows affected)
+Anio MesNombre IngresoTotal
+---- --------- ------------
+2026 February 6370.00
+2026 March 6820.00
+
+(2 rows affected)
+
+(1 rows affected)
+IdAuditoria TablaAfectada Operacion ValorAnterior ValorNuevo FechaEvento
+----------- ------------- --------- ------------- ---------- -----------
+5 Refaccion UPDATE PrecioVenta: 680.00, Costo: 420.00 PrecioVenta: 690.00, Costo: 420.00 2026-11-24 19:02:08
+
+(1 rows affected)
+
+(0 rows affected)
+CasoPrueba TriggerProbado MensajeError
+---------- -------------- ------------
+16 trg_PrevenirEliminar_ClienteConOrdenes No se puede eliminar el cliente porque tiene órdenes de servicio en el historial. Utilice baja lógica (Activo = 0).
+
+(1 rows affected)
+IdOrdenCreadaEnTransaccion Folio IdEstadoOrden
+-------------------------- ----- -------------
+31 ORD-2026-0026 1
+
+(1 rows affected)
+CasoPrueba TransaccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+18 usp_Tx_ConsumirRefaccionEnOrden (Sin Stock) 50011 La orden de servicio no existe, ya fue entregada o está cancelada.
+
+(1 rows affected)
+CasoPrueba IdCompraGenerada StockAntes StockDespues
+---------- ---------------- ---------- ------------
+19 7 8 13
+
+(1 rows affected)
+CasoPrueba TransaccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+20 usp_Tx_FinalizarYEntregarOrden (Orden ya entregada) 50041 La orden de servicio ya fue entregada anteriormente.
+
+(1 rows affected)
+IdOrdenServicio Folio Cliente Dispositivo Estado FechaRecepcion FechaPrometida CostoTotal SaldoPendiente
+--------------- ----- ------- ----------- ------ -------------- -------------- ---------- --------------
+25 ORD-2026-0025 Ricardo Salazar Peña Sony PlayStation 5 Standard Cancelada 2026-04-27 10:00:00 2026-04-29 18:00:00 .00 .00
+24 ORD-2026-0024 Sofía Camacho Solís Lenovo ThinkPad T14 Gen 2 Recibida 2026-04-26 16:30:00 2026-04-29 18:00:00 650.00 650.00
+23 ORD-2026-0023 Javier Herrera Bravo Asus ROG Strix G15 Recibida 2026-04-25 11:10:00 2026-04-28 18:00:00 600.00 600.00
+22 ORD-2026-0022 Mariana Torres Domínguez Apple iPad Air 4ta Gen En Diagnóstico 2026-04-22 13:00:00 2026-04-24 18:00:00 550.00 550.00
+21 ORD-2026-0021 Alejandro Gómez Ruiz Samsung Galaxy S21 Ultra En Diagnóstico 2026-04-20 10:00:00 2026-04-22 18:00:00 400.00 400.00
+20 ORD-2026-0020 Teresa Galindo Becerra HP Envy x360 Convertible Esperando Aprobación 2026-04-18 15:45:00 2026-04-21 18:00:00 2700.00 2700.00
+19 ORD-2026-0019 Hugo Espinoza Miranda Acer Nitro 5 AN515 Esperando Aprobación 2026-04-15 12:00:00 2026-04-18 18:00:00 1420.00 1420.00
+18 ORD-2026-0018 Patricia Aguilar Tapia Samsung Galaxy Tab S7 FE Esperando Refacción 2026-04-12 11:30:00 2026-04-16 18:00:00 1170.00 1170.00
+17 ORD-2026-0017 Arturo Rangel Cano Dell Dell Vostro 3400 Esperando Refacción 2026-04-10 14:00:00 2026-04-15 18:00:00 2650.00 2650.00
+16 ORD-2026-0016 Claudia Zavala Quintero HP HP ProDesk 400 G6 En Reparación 2026-04-07 10:15:00 2026-04-10 18:00:00 1880.00 1880.00
+15 ORD-2026-0015 Guillermo Rosas Villalobos Apple iPhone 13 Pro En Reparación 2026-04-03 16:00:00 2026-04-06 18:00:00 1850.00 1850.00
+14 ORD-2026-0014 Lorena Cervantes Parra Asus TUF Gaming F15 En Reparación 2026-04-01 11:00:00 2026-04-04 18:00:00 1680.00 1680.00
+13 ORD-2026-0013 Adrián Mora Cordero HP HP LaserJet Pro M404n Terminada / Lista 2026-03-28 12:00:00 2026-03-31 16:00:00 1290.00 1290.00
+12 ORD-2026-0012 Fernanda Delgado Nava Lenovo IdeaPad 3 14ALC6 Terminada / Lista 2026-03-25 10:40:00 2026-03-27 18:00:00 1140.00 1140.00
+11 ORD-2026-0011 Héctor Benítez Rojo Sony PlayStation 4 Slim Terminada / Lista 2026-03-20 15:00:00 2026-03-23 18:00:00 1170.00 1170.00
+10 ORD-2026-0010 Daniela Montesinos Cruz Acer Aspire 5 A515 Entregada 2026-03-15 13:20:00 2026-03-17 18:00:00 400.00 .00
+9 ORD-2026-0009 Eduardo Paredes Gil Dell OptiPlex 7070 SFF Entregada 2026-03-10 09:00:00 2026-03-12 18:00:00 400.00 .00
+8 ORD-2026-0008 Valeria Lara Orozco HP Omen 16 Entregada 2026-03-05 14:10:00 2026-03-08 19:00:00 870.00 220.00
+7 ORD-2026-0007 Manuel Vargas Ibarra Samsung Galaxy A54 5G Entregada 2026-03-01 11:30:00 2026-03-02 18:00:00 450.00 .00
+6 ORD-2026-0006 Gabriela Fuentes Meza Apple MacBook Air M1 2020 Entregada 2026-02-25 10:00:00 2026-02-27 15:00:00 150.00 .00
+5 ORD-2026-0005 Ricardo Salazar Peña Sony PlayStation 5 Standard Entregada 2026-02-20 12:45:00 2026-02-24 18:00:00 870.00 220.00
+4 ORD-2026-0004 Sofía Camacho Solís Lenovo ThinkPad T14 Gen 2 Entregada 2026-02-14 16:20:00 2026-02-16 19:00:00 300.00 .00
+3 ORD-2026-0003 Javier Herrera Bravo Asus ROG Strix G15 Entregada 2026-02-10 11:00:00 2026-02-12 18:00:00 870.00 220.00
+2 ORD-2026-0002 Mariana Torres Domínguez Dell Inspiron 3501 Entregada 2026-02-05 10:15:00 2026-02-07 14:00:00 1480.00 400.00
+1 ORD-2026-0001 Alejandro Gómez Ruiz HP Pavilion 15-dk0020la Entregada 2026-02-01 09:30:00 2026-02-03 18:00:00 970.00 220.00
+CasoPrueba Folio EstadoCancelado StockAntes StockDespuesReintegro
+---------- ----- --------------- ---------- ---------------------
+22 ORD-2026-0017 9 4 5
+
+(1 rows affected)
+CasoPrueba TransaccionProbada CodigoError MensajeError
+---------- ------------------ ----------- ------------
+23 usp_Tx_RegistrarVentaMostrador (Sin Stock) 50031 Stock insuficiente para concretar la venta de mostrador.
+
+(1 rows affected)
+CasoPrueba PruebaSeguridad CodigoError MensajeError
+---------- --------------- ----------- ------------
+24 Seguridad Rol_Consulta sobre dbo.Auditoria 229 The SELECT permission was denied on the object 'Auditoria', database 'ServicioTecnicoBD', schema 'dbo'.
+
+(1 rows affected)
+CasoPrueba PruebaSeguridad CodigoError MensajeError
+---------- --------------- ----------- ------------
+25 Seguridad Rol_Tecnico sobre dbo.Pago 229 The SELECT permission was denied on the object 'Pago', database 'ServicioTecnicoBD', schema 'dbo'.
+
+(1 rows affected)

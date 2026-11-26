@@ -33,4 +33,7 @@ Esta carpeta almacena capturas de pantalla, pruebas de ejecución y resultados d
   - `13_auditoria.png`: Visor de auditoría (`FrmAuditoria`).
   - `14_usuarios_roles.png`: Administración de usuarios y roles (`FrmUsuarios`).
   - `15_menu_rol_tecnico_restringido.png`: Menú principal con rol `Tecnico` evidenciando restricción de módulos.
-- **`video_demo/`**: Video demostrativo.
+- **[Demo completa del Sistema de Gestión de Servicio Técnico](video_demo/Demo-completa-Servicio-Tecnico.mp4)** (MP4, 3 min 10 s). Sigue el caso de Mariana Luna desde el registro de su equipo hasta la entrega de la orden `ORD-2026-0026` y su verificación en el historial. Cierra con un recorrido por los módulos y conserva la narración de Dalia y los acercamientos de ambas grabaciones.
+- [Video demo del Sistema de Gestión de Servicio Técnico](video_demo/SistemaServicioTecnico-demo.mp4) (MP4, 47 segundos). Grabación de la aplicación en ejecución con narración en español y acercamientos al panel del taller, clientes, órdenes de servicio e historial.
+- [Recepción de un equipo y seguimiento por folio](video_demo/Recepcion-y-seguimiento.mp4) (MP4, 1 min 23 s). Demostración narrada del registro de Mariana Luna y su Lenovo ThinkPad E14, la creación de la orden `ORD-2026-0026` y su búsqueda en el historial.
+- [Del diagnóstico a la entrega](video_demo/Diagnostico-entrega-y-modulos.mp4). Continuación de la orden `ORD-2026-0026`. Muestra el diagnóstico, los cambios de estado, la entrega y su verificación en el historial. Cierra con un recorrido por los módulos del taller, catálogos, operaciones y administración.
